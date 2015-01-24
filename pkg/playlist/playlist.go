@@ -4,8 +4,12 @@ import (
 	"time"
 )
 
+type PlaylistID int
+type EntryID int
+type UserID int
+
 type Playlist struct {
-	Pid     int
+	Pid     PlaylistID
 	Title   string
 	Owner   User
 	Stars   int
@@ -14,7 +18,7 @@ type Playlist struct {
 }
 
 type Entry struct {
-	Eid      int
+	Eid      EntryID
 	Ytid     string
 	Title    string
 	Artist   string
@@ -23,6 +27,6 @@ type Entry struct {
 }
 
 type User struct {
-	Uid  int
+	Uid  UserID
 	Name string
 }
