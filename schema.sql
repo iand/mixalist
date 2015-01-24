@@ -1,4 +1,4 @@
-# Schema version 6
+# Schema version 7
 
 create table mix_version (
     version     integer,                                # current database version
@@ -15,7 +15,8 @@ create table mix_playlist (
     pid         serial primary key,                     # playlist ID
     title       varchar(255),                           # title of playlist
     owner_uid   integer references mix_user (uid),      # ID of user that owns this playlist
-    created     timestamp                               # timestamp of creation of the playlist
+    created     timestamp,                              # timestamp of creation of the playlist
+    search_text varchar                                 # concenation of title and tags
 );
 
 create table mix_playlist_star (
@@ -51,4 +52,5 @@ Schema version changelog:
     4: add mix_player.created column
     5: add mix_playlist_entry.search_text column
     6: make mix_playlist_entry.search_text always lowercase
+    7: add mix_playlist.search_text column
 */
