@@ -22,26 +22,30 @@
     <div class="row">
 	    <div class="col-md-1">
 	    </div>
-	    <div class="col-md-2">
-	        
+	    <div class="col-md-11">
+			<h2> Remixing {{.playlist.Title}} </h2>
 		</div>
-		<div class="col-md-9">
-			 <div class="input-group">
-			      <input type="text" class="form-control" placeholder="Search for music..">
-			      <span class="input-group-btn">
-			        <button class="btn btn-default" type="button">Go!</button>
-			      </span>
-			</div>
-			<br>
-			
-	    </div>
-	</div>
-
-	<div class="row" style="border-bottom:1px solid; padding:6px;"> 
-	</div>
-
 	
-    </div>
+	</div>
+
+	<div class="row">
+		<div class="col-md-1">
+		</div>
+
+		<div class="col-md-2">
+			<div class="media">
+			  <div class="media-left media-middle">
+			    <a href="#">
+			      <img class="media-object" src="images/unknown.jpg" alt="..." height="96" width="96" >
+			    </a>
+			  </div>
+			</div>
+		</div>
+
+		<div class="col-md-9">
+			<button class="btn btn-primary " type="button" data-toggle="modal" data-target="#search" >Add Music</button>
+		</div>
+	</div>	
 
 	{{range .playlist.Entries}}
 	<div class="row">
@@ -52,7 +56,7 @@
 			<div class="media">
 			  <div class="media-left media-middle">
 			    <a href="#">
-			      <img class="media-object" src="images/sample2.jpg" alt="..." height="128" width="128" >
+			      <img class="media-object" src="images/sample2.jpg" alt="..." height="96" width="96" >
 			    </a>
 			  </div>
 			</div>
@@ -61,7 +65,7 @@
 		<div class="col-md-9">
 			<h3> {{.Title}} </h3>
 			<h4> {{.Artist}} </h4>
-			<button type="button" class="btn btn-default">Delete</button>
+			<button type="button" class="btn btn-danger"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete</button>
 		</div>
 	</div>
 	{{end}}
@@ -71,6 +75,31 @@
 	</div>
 	</div>
   </div>
+
+  <div class="modal fade" id="search" tabindex="-1" role="dialog" aria-labelledby="searchtitle" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="searchtitle">Modal title</h4>
+      </div>
+
+      <div class="modal-body">
+	       <div class="input-group">
+            <input type="text" class="form-control" placeholder="Search for music..">
+            <span class="input-group-btn">
+              <button class="btn btn-primary" type="button">Go!</button>
+            </span>
+     	</div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 
     
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
