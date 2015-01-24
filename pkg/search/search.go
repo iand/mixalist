@@ -56,7 +56,7 @@ type Result struct {
 	Source     string      `json:"source"`
 	SourceID   string      `json:"sourceid"`
 	MediaURL   string      `json:"mediaurl"`
-	PreviewURL string      `json:"imageurl"`
+	PreviewURL string      `json:"previewurl"`
 	Ext        interface{} `json:"ext,omitempty"`
 }
 
