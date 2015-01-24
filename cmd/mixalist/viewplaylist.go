@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/GeertJohan/go.rice"
 	"github.com/gorilla/mux"
-	"github.com/iand/mixalist/pkg/db"
 	"github.com/iand/mixalist/pkg/playlist"
 	"html/template"
 	"net/http"
@@ -21,15 +20,7 @@ func viewplaylist(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	d, err := db.Connect(true)
-
-	if err != nil {
-		msg := fmt.Sprintf("Could not connect to database: %v", err)
-		http.Error(w, msg, http.StatusInternalServerError)
-		return
-	}
-
-	pl, err := d.GetPlaylist(playlist.PlaylistID(pid))
+	pl, err := database.GetPlaylist(playlist.PlaylistID(pid))
 	if err != nil {
 		msg := fmt.Sprintf("Could not get playlist: %v", err)
 		http.Error(w, msg, http.StatusInternalServerError)
