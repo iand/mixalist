@@ -8,8 +8,8 @@ import (
 )
 
 var (
-    InvalidPlaylistError = errors.New("Invalid playlist ID")
-    InvalidUserError = errors.New("Invalid user ID")
+    InvalidPlaylistError  = errors.New("Invalid playlist ID")
+    InvalidUserError      = errors.New("Invalid user ID")
     NotInTransactionError = errors.New("Attempt to modify database where not in a transaction")
 )
 
