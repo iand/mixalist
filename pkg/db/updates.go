@@ -9,7 +9,7 @@ package db
 // 5) commit all of the above as a single commit
 
 // Latest version of the database
-const Latest DatabaseVersion = 7
+const Latest DatabaseVersion = 8
 
 // Database update history.
 // Field 'From' and 'To' are the version numbers before and after the update.
@@ -72,6 +72,13 @@ var Updates = []*DatabaseUpdate{
              where mix_playlist.pid = subquery.pid`,
         },
     },
+    &DatabaseUpdate{
+        From: 7,
+        To: 8,
+        SQL: []string{
+            "alter table mix_playlist add column parent_pid integer references mix_playlist (pid)",
+        },
+    },
 }
 
 // LatestSchema is a list of table creation statements, accurate to the version
@@ -87,7 +94,8 @@ var LatestSchema = []Table{
         title       varchar(255),
         owner_uid   integer references mix_user (uid),
         created     timestamp,
-        search_text varchar
+        search_text varchar,
+        parent_pid  integer references mix_playlist (pid)
     )`},
 
     Table{"mix_playlist_star", `create table mix_playlist_star (
