@@ -1,10 +1,11 @@
 package db
 
 // How to perform a database update:
-// 1) update schema.sql, incrementing the version number & commit seperately to other changes
-// 2) increment Latest
-// 3) add a DatabaseUpdate to Updates
-// 4) if the change affected the table structure, update LatestSchema
+// 1) increment the latest version number (here and in schema.sql)
+// 2) add a DatabaseUpdate for migration of existing data to Updates
+// 3) if the change required modificiation of the table schemas, update the
+//    schemas here and in schema.sql
+// 4) commit all of the above as a single commit
 
 // Latest version of the database
 const Latest DatabaseVersion = 1
