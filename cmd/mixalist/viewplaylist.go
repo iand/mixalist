@@ -1,13 +1,29 @@
 package main
 
 import (
+	"fmt"
 	"github.com/GeertJohan/go.rice"
-	"github.com/iand/mixalist/pkg/playlist"
+	"github.com/iand/mixalist/pkg/db"
 	"html/template"
 	"net/http"
 )
 
 func viewplaylist(w http.ResponseWriter, r *http.Request) {
+	d, err := db.Connect(true)
+
+	if err != nil {
+		msg := fmt.Sprintf("Could not connect to database: %v", err)
+		http.Error(w, msg, http.StatusInternalServerError)
+		return
+	}
+
+	pl, err := d.GetPlaylist(2)
+	if err != nil {
+		msg := fmt.Sprintf("Could not get playlist: %v", err)
+		http.Error(w, msg, http.StatusInternalServerError)
+		return
+	}
+
 	box, _ := rice.FindBox("templates")
 
 	templateData, _ := box.String("playlist.html")
@@ -15,30 +31,7 @@ func viewplaylist(w http.ResponseWriter, r *http.Request) {
 
 	data := map[string]interface{}{
 
-		"playlist": playlist.Playlist{
-			Title: "Top Taylor Swift",
-			Owner: &playlist.User{
-				Name: "agitated_weasle",
-			},
-			Stars: 59,
-			Tags: []string{
-				"love", "pop", "teen",
-			},
-			Entries: []*playlist.Entry{
-				&playlist.Entry{
-					Title:  "Track1",
-					Artist: "Artist1",
-				},
-				&playlist.Entry{
-					Title:  "Track2",
-					Artist: "Artist2",
-				},
-				&playlist.Entry{
-					Title:  "Track3",
-					Artist: "Artist3",
-				},
-			},
-		},
+		"playlist": pl,
 	}
 
 	w.Header().Add("Content-Type", "text/html")
