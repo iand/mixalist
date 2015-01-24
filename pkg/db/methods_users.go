@@ -6,7 +6,7 @@ import (
 
 // Get only the information stored in the actual mix_user record.
 func (db *Database) GetUserInfo(uid playlist.UserID) (name string, err error) {
-    row := db.getQueryable().QueryRow("SELECT name FROM mix_user WHERE uid = $1", uid)
+    row := db.getQueryable().QueryRow("select name from mix_user where uid = $1", uid)
     err = row.Scan(&name)
     if err != nil {
         if isNoRowsError(err) {
@@ -14,7 +14,7 @@ func (db *Database) GetUserInfo(uid playlist.UserID) (name string, err error) {
         }
         return "", err
     }
-    
+
     return name, nil
 }
 
@@ -24,11 +24,11 @@ func (db *Database) GetUser(uid playlist.UserID) (user *playlist.User, err error
     if err != nil {
         return nil, err
     }
-    
+
     user = &playlist.User{
-        Uid: uid,
+        Uid:  uid,
         Name: name,
     }
-    
+
     return user, nil
 }

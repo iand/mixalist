@@ -9,7 +9,7 @@ type DatabaseVersion uint
 
 type DatabaseUpdate struct {
     From, To DatabaseVersion
-    SQL []string
+    SQL      []string
 }
 
 // Check the database version and perform updates if necessary. A flag indicating
@@ -18,41 +18,41 @@ func (db *Database) doUpdates() (empty bool, err error) {
     if db.tx.tx == nil {
         return false, wrapError(1, NotInTransactionError)
     }
-    
+
     current, empty, err := db.getVersion()
     if err != nil {
         return false, err
     }
-    
+
     if db.logging {
         log.Printf("Current database version is %d, latest is %d", current, Latest)
     }
-    
+
     for current < Latest {
         updateDone := false
-        
+
         for _, update := range Updates {
             if update.From == current {
                 err = db.doUpdate(update)
                 if err != nil {
                     return false, err
                 }
-                
+
                 current = update.To
                 updateDone = true
                 break
             }
         }
-        
+
         if !updateDone {
             return false, fmt.Errorf("Failed to update database from current version %d to latest version %d (no suitable update found)", current, Latest)
         }
     }
-    
+
     if db.logging {
         log.Printf("Database is up to date")
     }
-    
+
     return empty, nil
 }
 
@@ -61,11 +61,11 @@ func (db *Database) doUpdate(update *DatabaseUpdate) (err error) {
     if db.tx.tx == nil {
         return wrapError(1, NotInTransactionError)
     }
-    
+
     if db.logging {
         log.Printf("Performing database update from version %d to version %d", update.From, update.To)
     }
-    
+
     for _, stmt := range update.SQL {
         _, err = db.tx.Exec(stmt)
         if err != nil {
@@ -74,13 +74,13 @@ func (db *Database) doUpdate(update *DatabaseUpdate) (err error) {
             return err
         }
     }
-    
-    _, err = db.tx.Exec("UPDATE mix_version SET version = $1", update.To)
+
+    _, err = db.tx.Exec("update mix_version set version = $1", update.To)
     if err != nil {
         db.RollbackTx()
         return err
     }
-    
+
     return nil
 }
 
@@ -91,20 +91,20 @@ func (db *Database) getVersion() (v DatabaseVersion, empty bool, err error) {
     if db.tx.tx == nil {
         return 0, false, wrapError(1, NotInTransactionError)
     }
-    
-    err = db.getQueryable().QueryRow("SELECT version FROM mix_version").Scan(&v)
+
+    err = db.getQueryable().QueryRow("select version from mix_version").Scan(&v)
     if err != nil {
         if isNonexistentTableError(err) {
             // version table does not exist -> database is empty
             if db.logging {
                 log.Printf("Creating table mix_version")
             }
-            _, err = db.tx.Exec("CREATE TABLE mix_version (version integer)")
+            _, err = db.tx.Exec("create table mix_version (version integer)")
             if err != nil {
                 db.RollbackTx()
                 return 0, false, err
             }
-            _, err = db.tx.Exec("INSERT INTO mix_version VALUES ($1)", Latest)
+            _, err = db.tx.Exec("insert into mix_version values ($1)", Latest)
             if err != nil {
                 db.RollbackTx()
                 return 0, false, err
@@ -117,7 +117,7 @@ func (db *Database) getVersion() (v DatabaseVersion, empty bool, err error) {
             if db.logging {
                 log.Printf("Version table exists but is empty - was the database in a corrupted state?")
             }
-            _, err = db.tx.Exec("INSERT INTO mix_version VALUES ($1)", Latest)
+            _, err = db.tx.Exec("insert intro mix_version values ($1)", Latest)
             if err != nil {
                 db.RollbackTx()
                 return 0, false, err
@@ -130,7 +130,7 @@ func (db *Database) getVersion() (v DatabaseVersion, empty bool, err error) {
             return 0, false, err
         }
     }
-    
+
     // version fetch was successful
     return v, false, nil
 }

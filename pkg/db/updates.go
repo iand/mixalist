@@ -9,7 +9,7 @@ package db
 // 5) commit all of the above as a single commit
 
 // Latest version of the database
-const Latest DatabaseVersion = 6
+const Latest DatabaseVersion = 8
 
 // Database update history.
 // Field 'From' and 'To' are the version numbers before and after the update.
@@ -17,14 +17,14 @@ const Latest DatabaseVersion = 6
 var Updates = []*DatabaseUpdate{
     &DatabaseUpdate{
         From: 1,
-        To: 2,
+        To:   2,
         SQL: []string{
             "alter table mix_user add column name varchar(255)",
         },
     },
     &DatabaseUpdate{
         From: 2,
-        To: 3,
+        To:   3,
         SQL: []string{
             `create table mix_playlist_star (
                 pid         integer references mix_playlist (pid),
@@ -35,14 +35,14 @@ var Updates = []*DatabaseUpdate{
     },
     &DatabaseUpdate{
         From: 3,
-        To: 4,
+        To:   4,
         SQL: []string{
             "alter table mix_playlist add column created timestamp",
         },
     },
     &DatabaseUpdate{
         From: 4,
-        To: 5,
+        To:   5,
         SQL: []string{
             "alter table mix_playlist_entry add column search_text varchar",
             "update mix_playlist_entry set search_text = title || ' ' || artist || ' ' || album",
@@ -50,15 +50,39 @@ var Updates = []*DatabaseUpdate{
     },
     &DatabaseUpdate{
         From: 5,
-        To: 6,
+        To:   6,
         SQL: []string{
             "update mix_playlist_entry set search_text = lower(search_text)",
+        },
+    },
+    &DatabaseUpdate{
+        From: 6,
+        To:   7,
+        SQL: []string{
+            "alter table mix_playlist add column search_text varchar",
+            `update mix_playlist
+             set search_text = subquery.search_text
+             from (
+                select mix_playlist.pid as pid,
+                       lower(mix_playlist.title || ' ' || string_agg(mix_playlist_tag.tag, ' ')) as search_text
+                from mix_playlist
+                inner join mix_playlist_tag on mix_playlist.pid = mix_playlist_tag.pid
+                group by mix_playlist.pid
+             ) as subquery
+             where mix_playlist.pid = subquery.pid`,
+        },
+    },
+    &DatabaseUpdate{
+        From: 7,
+        To: 8,
+        SQL: []string{
+            "alter table mix_playlist add column parent_pid integer references mix_playlist (pid)",
         },
     },
 }
 
 // LatestSchema is a list of table creation statements, accurate to the version
-// stored in Latest. 
+// stored in Latest.
 var LatestSchema = []Table{
     Table{"mix_user", `create table mix_user (
         uid         serial primary key,
@@ -69,7 +93,9 @@ var LatestSchema = []Table{
         pid         serial primary key,
         title       varchar(255),
         owner_uid   integer references mix_user (uid),
-        created     timestamp
+        created     timestamp,
+        search_text varchar,
+        parent_pid  integer references mix_playlist (pid)
     )`},
 
     Table{"mix_playlist_star", `create table mix_playlist_star (
