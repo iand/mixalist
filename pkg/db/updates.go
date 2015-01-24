@@ -5,10 +5,11 @@ package db
 // 2) if the change requires modificiation of the table schemas, update the
 //    schemas here and in schema.sql
 // 3) add a DatabaseUpdate for migration of existing data to Updates
-// 4) commit all of the above as a single commit
+// 4) log the update in the schema version changelog at the bottom of schema.sql
+// 5) commit all of the above as a single commit
 
 // Latest version of the database
-const Latest DatabaseVersion = 4
+const Latest DatabaseVersion = 6
 
 // Database update history.
 // Field 'From' and 'To' are the version numbers before and after the update.
@@ -37,6 +38,21 @@ var Updates = []*DatabaseUpdate{
         To: 4,
         SQL: []string{
             "alter table mix_playlist add column created timestamp",
+        },
+    },
+    &DatabaseUpdate{
+        From: 4,
+        To: 5,
+        SQL: []string{
+            "alter table mix_playlist_entry add column search_text varchar",
+            "update mix_playlist_entry set search_text = title || ' ' || artist || ' ' || album",
+        },
+    },
+    &DatabaseUpdate{
+        From: 5,
+        To: 6,
+        SQL: []string{
+            "update mix_playlist_entry set search_text = lower(search_text)",
         },
     },
 }
@@ -76,6 +92,7 @@ var LatestSchema = []Table{
         title       varchar(255),
         artist      varchar(255),
         album       varchar(255),
-        duration    smallint
+        duration    smallint,
+        search_text varchar
     )`},
 }

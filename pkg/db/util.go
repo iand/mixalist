@@ -4,6 +4,7 @@ import (
     "database/sql"
     "errors"
     "github.com/lib/pq"
+    "strings"
 )
 
 var (
@@ -30,4 +31,12 @@ func isNoRowsError(err error) bool {
         err = dwe.err
     }
     return err == sql.ErrNoRows
+}
+
+// escape string to go into an SQL LIKE pattern
+func patternEscape(s string) string {
+    s = strings.Replace(s, "\\", "\\\\", -1)
+    s = strings.Replace(s, "%", "\\%", -1)
+    s = strings.Replace(s, "_", "\\_", -1)
+    return s
 }
