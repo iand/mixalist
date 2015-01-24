@@ -1,9 +1,7 @@
 package db
 
 import (
-    "database/sql"
     "fmt"
-    "github.com/lib/pq"
     "log"
 )
 
@@ -121,24 +119,4 @@ func (db Database) getVersion(tx debugWrappedTx) (v DatabaseVersion, empty bool,
     
     // version fetch was successful
     return v, false, nil
-}
-
-// http://www.postgresql.org/docs/9.3/static/errcodes-appendix.html
-const invalidTableErrorCode pq.ErrorCode = "42P01"
-
-func isNonexistentTableError(err error) bool {
-    dwe, ok := err.(debugWrappedError)
-    if ok {
-        err = dwe.err
-    }
-    perr, ok := err.(*pq.Error)
-    return ok && perr.Code == invalidTableErrorCode
-}
-
-func isNoRowsError(err error) bool {
-    dwe, ok := err.(debugWrappedError)
-    if ok {
-        err = dwe.err
-    }
-    return err == sql.ErrNoRows
 }
