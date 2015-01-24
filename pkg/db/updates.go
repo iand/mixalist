@@ -8,20 +8,27 @@ package db
 // 4) commit all of the above as a single commit
 
 // Latest version of the database
-const Latest DatabaseVersion = 1
+const Latest DatabaseVersion = 2
 
 // Database update history.
 // Field 'From' and 'To' are the version numbers before and after the update.
 // Field 'SQL' is a list of SQL statements to execute.
 var Updates = []*DatabaseUpdate{
-    
+    &DatabaseUpdate{
+        From: 1,
+        To: 2,
+        SQL: []string{
+            "alter table mix_user add column name varchar(255)",
+        },
+    },
 }
 
 // LatestSchema is a list of table creation statements, accurate to the version
 // stored in Latest. 
 var LatestSchema = []Table{
     Table{"mix_user", `create table mix_user (
-        uid         serial primary key
+        uid         serial primary key,
+        name        varchar(255)
     )`},
 
     Table{"mix_playlist", `create table mix_playlist (

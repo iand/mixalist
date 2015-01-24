@@ -1,4 +1,4 @@
-# Schema version 1
+# Schema version 2
 
 create table mix_version (
     version     integer,                                # current database version
@@ -7,7 +7,8 @@ create table mix_version (
 
 
 create table mix_user (
-    uid         serial primary key                      # user ID
+    uid         serial primary key,                     # user ID
+    name        varchar(255)                            # username
 );
 
 create table mix_playlist (
@@ -32,3 +33,10 @@ create table mix_playlist_entry (
     album       varchar(255),                           # track album (can be edited)
     duration    smallint                                # duration of video in seconds
 );
+
+
+/*
+Schema version changelog:
+    1: initial version
+    2: add mix_user.name column
+*/
