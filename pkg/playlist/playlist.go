@@ -11,10 +11,10 @@ type UserID int
 type Playlist struct {
 	Pid     PlaylistID
 	Title   string
-	Owner   User
+	Owner   *User
 	Stars   int
 	Tags    []string
-	Entries []Entry
+	Entries []*Entry
 }
 
 type Entry struct {
