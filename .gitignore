@@ -22,3 +22,8 @@ _testmain.go
 *.exe
 *.test
 *.prof
+
+
+
+# keep database credentials out of public repo
+pkg/db/creds.go
