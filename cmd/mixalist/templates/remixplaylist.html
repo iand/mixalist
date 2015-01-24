@@ -1,151 +1,161 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>mixalist</title>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>mixalist</title>
 
-    <!-- Bootstrap -->
-    <link href="/css/bootstrap.min.css" rel="stylesheet">
+	<!-- Bootstrap -->
+	<link href="/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+	<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
       <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <![endif]-->
+      <![endif]-->
 
-    <style>
-		#search .modal-body {
-			max-height: 500px;
-			overflow-y: scroll;
-		}
+      <style>
 
-		#search .search-preview {
-			max-width: 128px;
-			max-height: 96px;
-		}
 
-		#search .searchrow {
-			padding-top: 5px;
-		}
+      	#search .modal-body {
+      		max-height: 500px;
+      		overflow-y: scroll;
+      	}
 
-    </style>
+      	#search .search-preview {
+      		max-width: 128px;
+      		max-height: 96px;
+      	}
+
+      	#search .searchrow {
+      		padding-top: 5px;
+      	}
+
+      </style>
 
 
   </head>
   <body>
-  <div class="container-fluid">
+  	<div class="container">
 
-    <div class="row">
-	    <div class="col-md-1">
-	    </div>
-	    <div class="col-md-11">
-			<h2> Remixing {{.playlist.Title}} </h2>
-		</div>
+  		<div class="row">
+  			<div class="col-md-1">
+  			</div>
+  			<div class="col-md-11">
+  				<h2> Remixing {{.playlist.Title}} </h2>
+  			</div>
 
-	</div>
+  		</div>
 
-	<div class="row">
-		<div class="col-md-1">
-		</div>
+  		<div class="row">
+  			<div class="col-md-1">
+  			</div>
 
-		<div class="col-md-2">
-			<div class="media">
-			  <div class="media-left media-middle">
-			    <a href="#">
-			      <img class="media-object" src="images/unknown.jpg" alt="..." height="96" width="96" >
-			    </a>
-			  </div>
-			</div>
-		</div>
+  			<div class="col-md-2">
+  				<div class="media">
+  					<div class="media-left media-middle">
+  						<a href="#">
+  							<img class="media-object" src="images/unknown.jpg" alt="..." height="96" width="96" >
+  						</a>
+  					</div>
+  				</div>
+  			</div>
 
-		<div class="col-md-9">
-			<button class="btn btn-primary " type="button" data-toggle="modal" data-target="#search" >Add Music</button>
-		</div>
-	</div>
+  			<div class="col-md-9">
+  				<button class="btn btn-primary " type="button" data-toggle="modal" data-target="#search" >Add Music</button>
+  			</div>
+  		</div>
 
-	{{range .playlist.Entries}}
-	<div class="row">
-		<div class="col-md-1">
-		</div>
+  		{{range .playlist.Entries}}
+  		<div class="row">
+  			<div class="col-md-1">
+  				<p class=" pull-right">
+  					<button type="button" class="btn btn-info btn-xs"><span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span></button>
+  					<button type="button" class="btn btn-info btn-xs"><span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span></button>
+  				</p>
+  				<p class=" pull-right">
+  					<button type="button" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>
+  				</p>
+  			</div>
 
-		<div class="col-md-2">
-			<div class="media">
-			  <div class="media-left media-middle">
-			    <a href="#">
-			      <img class="media-object" src="images/sample2.jpg" alt="..." height="96" width="96" >
-			    </a>
-			  </div>
-			</div>
-		</div>
+  			<div class="col-md-11">
+  				<div class="media">
+  					<div class="media-left media-middle">
+  						<a href="#">
+  							<img class="media-object" src="images/sample2.jpg" alt="..." height="96" width="96" >
+  						</a>
+  					</div>
 
-		<div class="col-md-9">
-			<h3> {{.Title}} </h3>
-			<h4> {{.Artist}} </h4>
-			<button type="button" class="btn btn-danger"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete</button>
-		</div>
-	</div>
-	{{end}}
-	<div class="row">
-	<div class="input-group">
-			<input type="text" class="form-control" placeholder="Name of Playlist" aria-describedby="basic-addon2"><button type="button" class="btn btn-default">Save</button>
-	</div>
-	</div>
-  </div>
+  					<div class="media-body">
+  						<h3> {{.Title}} </h3>
+  						<h4> {{.Artist}} </h4>
+  					</div>
+  				</div>
 
-  <div class="modal" id="search" tabindex="-1" role="dialog" aria-labelledby="searchtitle" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="searchtitle">Add music...</h4>
-      </div>
+  			</div>
 
-      <div class="modal-body">
-	    <div class="input-group">
-            <input type="text" class="form-control" placeholder="Search for music.." id="searchbox">
-            <span class="input-group-btn">
-              <button class="btn btn-primary" type="button" id="searchbtn">Go!</button>
-            </span>
-     	</div>
-     	<br>
-     	<div id="searchresults">
-     	</div>
-      </div>
+  		</div>
+  		{{end}}
+  		<div class="row">
+  			<div class="input-group">
+  				<input type="text" class="form-control" placeholder="Name of Playlist" aria-describedby="basic-addon2"><button type="button" class="btn btn-default">Save</button>
+  			</div>
+  		</div>
+  	</div>
 
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-      </div>
-    </div><!-- /.modal-content -->
-  </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
+  	<div class="modal" id="search" tabindex="-1" role="dialog" aria-labelledby="searchtitle" aria-hidden="true">
+  		<div class="modal-dialog">
+  			<div class="modal-content">
+  				<div class="modal-header">
+  					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+  					<h4 class="modal-title" id="searchtitle">Add music...</h4>
+  				</div>
+
+  				<div class="modal-body">
+  					<div class="input-group">
+  						<input type="text" class="form-control" placeholder="Search for music.." id="searchbox">
+  						<span class="input-group-btn">
+  							<button class="btn btn-primary" type="button" id="searchbtn">Go!</button>
+  						</span>
+  					</div>
+  					<br>
+  					<div id="searchresults">
+  					</div>
+  				</div>
+
+  				<div class="modal-footer">
+  					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+  				</div>
+  			</div><!-- /.modal-content -->
+  		</div><!-- /.modal-dialog -->
+  	</div><!-- /.modal -->
 
 
-    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-    <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script src="/js/bootstrap.min.js"></script>
+  	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+  	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+  	<!-- Include all compiled plugins (below), or include individual files as needed -->
+  	<script src="/js/bootstrap.min.js"></script>
 
-	<script type="text/javascript">
+  	<script type="text/javascript">
 
-    function search(q) {
-        if (q == "") {
-        	return
-        }
+  		function search(q) {
+  			if (q == "") {
+  				return
+  			}
 
-       	$.getJSON("/s?q="+encodeURIComponent(q), function( data ) {
-			var items = [];
-			$.each( data['results'], function( index, val ) {
-				items.push( "<div class='row searchrow' ><div class='col-md-3'><img class='media-object search-preview' src='" +val['previewurl']+"' width='128'></div><div class='col-md-6'><h4 class='media-heading'>" + val['title'] + "</h4></div><div class='col-md-3'><button type='button' class='btn btn-success pull-right'><span class='glyphicon glyphicon-plus-sign' aria-hidden='true'></span> Add</button></div></div>" );
-			});
-			$("#searchresults").html(items.join(""));
-		});
+  			$.getJSON("/s?q="+encodeURIComponent(q), function( data ) {
+  				var items = [];
+  				$.each( data['results'], function( index, val ) {
+  					items.push( "<div class='row searchrow panel' ><div class='col-md-3'><img class='media-object search-preview' src='" +val['previewurl']+"' width='128'></div><div class='col-md-6'><h4 class='media-heading'>" + val['title'] + "</h4></div><div class='col-md-3'><button type='button' class='btn btn-success pull-right'><span class='glyphicon glyphicon-plus-sign' aria-hidden='true'></span> Add</button></div></div>" );
+  				});
+  				$("#searchresults").html(items.join(""));
+  			});
 
-    }
+  		}
 
-	$(document).ready(function() {
+  		$(document).ready(function() {
         // Continually update search results as characters are typed
         $("#searchbtn").click(function() {
             // Make search inputs are case insensitive
@@ -153,15 +163,15 @@
             search(q);
         });
 
-		$('#search').on('show.bs.modal', function (event) {
-			$("#searchbox").val("");
-			$("#searchresults").html("");
-		});
+        $('#search').on('show.bs.modal', function (event) {
+        	$("#searchbox").val("");
+        	$("#searchresults").html("");
+        });
 
     });
 
-    </script>
+</script>
 
 
-  </body>
+</body>
 </html>
