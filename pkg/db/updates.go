@@ -9,7 +9,7 @@ package db
 // 5) commit all of the above as a single commit
 
 // Latest version of the database
-const Latest DatabaseVersion = 5
+const Latest DatabaseVersion = 6
 
 // Database update history.
 // Field 'From' and 'To' are the version numbers before and after the update.
@@ -46,6 +46,13 @@ var Updates = []*DatabaseUpdate{
         SQL: []string{
             "alter table mix_playlist_entry add column search_text varchar",
             "update mix_playlist_entry set search_text = title || ' ' || artist || ' ' || album",
+        },
+    },
+    &DatabaseUpdate{
+        From: 5,
+        To: 6,
+        SQL: []string{
+            "update mix_playlist_entry set search_text = lower(search_text)",
         },
     },
 }

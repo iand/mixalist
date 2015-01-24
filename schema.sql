@@ -1,4 +1,4 @@
-# Schema version 5
+# Schema version 6
 
 create table mix_version (
     version     integer,                                # current database version
@@ -50,4 +50,5 @@ Schema version changelog:
     3: add mix_playlist_star table with columns pid, uid, tstamp
     4: add mix_player.created column
     5: add mix_playlist_entry.search_text column
+    6: make mix_playlist_entry.search_text always lowercase
 */
