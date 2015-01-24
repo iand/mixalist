@@ -1,8 +1,72 @@
 package db
 
 import (
+    "fmt"
     "github.com/iand/mixalist/pkg/playlist"
 )
+
+// $1 - pagination start index
+// $2 - pagination page size
+// $3... - tags to match
+const scoringQueryHeader = `
+    with stars as (
+        select pid, count(*)
+        from mix_playlist_star
+        group by pid
+    )
+    select mix_playlist.pid as p, (coalesce(stars.count, 0) + 1) /
+        ((extract(epoch from
+            (timestamp 'now' - mix_playlist.created)) / 3600 + 2) ^ 1.8) as score
+    from mix_playlist
+    left join stars on mix_playlist.pid = stars.pid`
+const scoringQueryFooter = `
+    order by score desc
+    limit $2
+    offset $1`
+
+// Sort the playlists by score and return those that have any of the tags specified
+// in requiredTags. The results are paginated; pageSize specifies how many results
+// to return, and pageNum, which is zero-indexed, specifies the page number.
+func (db Database) GetSortedPlaylistIDs(pageSize, pageNum int, requiredTags []string) (pids []playlist.PlaylistID, err error) {
+    start := pageNum * pageSize
+    
+    query := scoringQueryHeader
+    params := []interface{}{start, pageSize}
+    if len(requiredTags) > 0 {
+        query += " where exists(select tag from mix_playlist_tag where pid = p and ("
+        for i, tag := range requiredTags {
+            if i > 0 {
+                query += " or "
+            }
+            query += fmt.Sprintf("tag = $%d", i + 3)
+            params = append(params, tag)
+        }
+        query += "))"
+    }
+    query += scoringQueryFooter
+    
+    rows, err := db.conn.Query(query, params...)
+    if err != nil {
+        return nil, err
+    }
+    
+    for rows.Next() {
+        var pid playlist.PlaylistID
+        var score float32
+        err = rows.Scan(&pid, &score)
+        if err != nil {
+            return nil, err
+        }
+        pids = append(pids, pid)
+    }
+    
+    err = rows.Err()
+    if err != nil {
+        return nil, err
+    }
+    
+    return pids, nil
+}
 
 // Get only the information stored in the actual mix_playlist record.
 func (db Database) GetPlaylistInfo(pid playlist.PlaylistID) (title string, ownerUid playlist.UserID, err error) {
