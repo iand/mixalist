@@ -15,6 +15,7 @@ type Playlist struct {
     Stars   int
     Tags    []string
     Entries []*Entry
+    ParentPid PlaylistID
 }
 
 type Entry struct {

@@ -70,22 +70,22 @@ func (db *Database) GetSortedPlaylistIDs(pageSize, pageNum int, requiredTags []s
 }
 
 // Get only the information stored in the actual mix_playlist record.
-func (db *Database) GetPlaylistRecord(pid playlist.PlaylistID) (title string, ownerUid playlist.UserID, err error) {
-    row := db.getQueryable().QueryRow("select title, owner_uid from mix_playlist where pid = $1", pid)
-    err = row.Scan(&title, &ownerUid)
+func (db *Database) GetPlaylistRecord(pid playlist.PlaylistID) (title string, ownerUid playlist.UserID, parentPid playlist.PlaylistID, err error) {
+    row := db.getQueryable().QueryRow("select title, owner_uid, parent_pid from mix_playlist where pid = $1", pid)
+    err = row.Scan(&title, &ownerUid, &parentPid)
     if err != nil {
         if isNoRowsError(err) {
             err = InvalidPlaylistError
         }
-        return "", 0, err
+        return "", 0, 0, err
     }
 
-    return title, ownerUid, nil
+    return title, ownerUid, parentPid, nil
 }
 
 // Get all information about a playlist.
 func (db *Database) GetPlaylist(pid playlist.PlaylistID) (p *playlist.Playlist, err error) {
-    title, ownerUid, err := db.GetPlaylistRecord(pid)
+    title, ownerUid, parentPid, err := db.GetPlaylistRecord(pid)
     if err != nil {
         return nil, err
     }
@@ -117,15 +117,16 @@ func (db *Database) GetPlaylist(pid playlist.PlaylistID) (p *playlist.Playlist, 
         Stars:   stars,
         Tags:    tags,
         Entries: entries,
+        ParentPid: parentPid,
     }, nil
 }
 
-func (db *Database) CreatePlaylistRecord(title string, ownerUid playlist.UserID, searchText string) (newPid playlist.PlaylistID, err error) {
+func (db *Database) CreatePlaylistRecord(title string, ownerUid playlist.UserID, parentPid playlist.PlaylistID, searchText string) (newPid playlist.PlaylistID, err error) {
     if db.tx.tx == nil {
         return 0, wrapError(1, NotInTransactionError)
     }
 
-    row := db.tx.QueryRow("insert into mix_playlist (title, owner_uid, created, search_text) values ($1, $2, timestamp 'now', $3) returning id", title, ownerUid, searchText)
+    row := db.tx.QueryRow("insert into mix_playlist (title, owner_uid, created, search_text, parent_pid) values ($1, $2, timestamp 'now', $3, $4) returning id", title, ownerUid, searchText, parentPid)
     err = row.Scan(&newPid)
     if err != nil {
         db.RollbackTx()
@@ -147,7 +148,7 @@ func (db *Database) CreatePlaylist(p *playlist.Playlist) (err error) {
     }
     searchText = strings.ToLower(searchText)
 
-    pid, err := db.CreatePlaylistRecord(p.Title, p.Owner.Uid, searchText)
+    pid, err := db.CreatePlaylistRecord(p.Title, p.Owner.Uid, p.ParentPid, searchText)
     if err != nil {
         return err
     }
