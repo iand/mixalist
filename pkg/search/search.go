@@ -1,6 +1,8 @@
 package search
 
 import (
+	"fmt"
+	"strings"
 	"time"
 
 	"github.com/iand/youtube"
@@ -25,7 +27,7 @@ func Search(query string) []Result {
 	quit := make(chan bool)
 	res := make(chan Result)
 
-	timer := time.NewTimer(250 * time.Millisecond)
+	timer := time.NewTimer(2500 * time.Millisecond)
 
 	remaining := len(searchers)
 	for _, fn := range searchers {
@@ -50,9 +52,12 @@ func Search(query string) []Result {
 }
 
 type Result struct {
-	Title    string `json:"title"`
-	Source   string `json:"source"`
-	SourceID string `json:"sourceid"`
+	Title      string      `json:"title"`
+	Source     string      `json:"source"`
+	SourceID   string      `json:"sourceid"`
+	MediaURL   string      `json:"mediaurl"`
+	PreviewURL string      `json:"imageurl"`
+	Ext        interface{} `json:"ext,omitempty"`
 }
 
 func searchYouTube(query string, results chan Result, quit chan bool, done chan bool) {
@@ -63,9 +68,30 @@ func searchYouTube(query string, results chan Result, quit chan bool, done chan 
 	}
 
 	for _, e := range feed.Entries {
+		id := e.ID.String()
+		if !strings.HasPrefix(id, "tag:youtube.com,2008:video:") {
+			continue
+		}
+
+		ytid := id[27:]
+
 		result := Result{
-			Title:  e.Title.String(),
-			Source: SourceYouTube,
+			Title:    e.Title.String(),
+			Source:   SourceYouTube,
+			SourceID: ytid,
+			MediaURL: fmt.Sprintf("https://www.youtube.com/watch?v=%s", ytid),
+		}
+
+		bestImageName := ""
+
+		for _, img := range e.Media.Thumbnails {
+			if img.Name == "sddefault" ||
+				(img.Name == "hqdefault" && bestImageName != "sddefault") ||
+				(img.Name == "mqdefault" && bestImageName != "sddefault" && bestImageName != "hqdefault") ||
+				(img.Name == "default " && bestImageName != "mqdefault" && bestImageName != "sddefault" && bestImageName != "hqdefault") {
+				result.PreviewURL = img.URL
+				bestImageName = img.Name
+			}
 		}
 
 		select {
