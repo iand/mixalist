@@ -2,5 +2,5 @@ package main
 
 func main() {
 	println("hello, world!")
-	println("HI")
+	println("THIS IS A GO PROGRAM")
 }
