@@ -33,7 +33,9 @@
 			<button type="button" class="btn btn-warning btn-xs">
 			<span class="glyphicon glyphicon-star" aria-hidden="true"></span> <span class="badge">{{.playlist.Stars}}</span>
 			</button>
+			<a href="/r?pid={{.playlist.Pid}}" class="btn btn-info btn-xs"><span class="glyphicon glyphicon-random" aria-hidden="true"></span> Remix</a>
 			{{range .playlist.Tags}}
+			<br>
 			<span class="label label-info">{{.}}</span>
 			{{end}}
 			</div>
