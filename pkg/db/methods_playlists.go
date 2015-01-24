@@ -25,8 +25,8 @@ const scoringQueryFooter = `
     offset $1`
 
 // Sort the playlists by score and return those that have any of the tags specified
-// in requiredTags. The results are paginated; pageSize specifies how many results
-// to return, and pageNum, which is zero-indexed, specifies the page number.
+// in requiredTags. If requiredTags is empty, all playlists are sorted. The results
+// are paginated using the pageSize and pageNum arguments.
 func (db Database) GetSortedPlaylistIDs(pageSize, pageNum int, requiredTags []string) (pids []playlist.PlaylistID, err error) {
     start := pageNum * pageSize
     
