@@ -17,14 +17,14 @@ const Latest DatabaseVersion = 7
 var Updates = []*DatabaseUpdate{
     &DatabaseUpdate{
         From: 1,
-        To: 2,
+        To:   2,
         SQL: []string{
             "alter table mix_user add column name varchar(255)",
         },
     },
     &DatabaseUpdate{
         From: 2,
-        To: 3,
+        To:   3,
         SQL: []string{
             `create table mix_playlist_star (
                 pid         integer references mix_playlist (pid),
@@ -35,14 +35,14 @@ var Updates = []*DatabaseUpdate{
     },
     &DatabaseUpdate{
         From: 3,
-        To: 4,
+        To:   4,
         SQL: []string{
             "alter table mix_playlist add column created timestamp",
         },
     },
     &DatabaseUpdate{
         From: 4,
-        To: 5,
+        To:   5,
         SQL: []string{
             "alter table mix_playlist_entry add column search_text varchar",
             "update mix_playlist_entry set search_text = title || ' ' || artist || ' ' || album",
@@ -50,14 +50,14 @@ var Updates = []*DatabaseUpdate{
     },
     &DatabaseUpdate{
         From: 5,
-        To: 6,
+        To:   6,
         SQL: []string{
             "update mix_playlist_entry set search_text = lower(search_text)",
         },
     },
     &DatabaseUpdate{
         From: 6,
-        To: 7,
+        To:   7,
         SQL: []string{
             "alter table mix_playlist add column search_text varchar",
             `update mix_playlist
@@ -75,7 +75,7 @@ var Updates = []*DatabaseUpdate{
 }
 
 // LatestSchema is a list of table creation statements, accurate to the version
-// stored in Latest. 
+// stored in Latest.
 var LatestSchema = []Table{
     Table{"mix_user", `create table mix_user (
         uid         serial primary key,

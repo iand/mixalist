@@ -14,6 +14,6 @@ func (db *Database) GetPlaylistStars(pid playlist.PlaylistID) (stars int, err er
         }
         return 0, err
     }
-    
+
     return stars, nil
 }

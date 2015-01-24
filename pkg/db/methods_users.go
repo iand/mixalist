@@ -14,7 +14,7 @@ func (db *Database) GetUserInfo(uid playlist.UserID) (name string, err error) {
         }
         return "", err
     }
-    
+
     return name, nil
 }
 
@@ -24,11 +24,11 @@ func (db *Database) GetUser(uid playlist.UserID) (user *playlist.User, err error
     if err != nil {
         return nil, err
     }
-    
+
     user = &playlist.User{
-        Uid: uid,
+        Uid:  uid,
         Name: name,
     }
-    
+
     return user, nil
 }

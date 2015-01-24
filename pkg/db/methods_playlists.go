@@ -30,7 +30,7 @@ const scoringQueryFooter = `
 // are paginated using the pageSize and pageNum arguments (pageNum is 0-indexed).
 func (db *Database) GetSortedPlaylistIDs(pageSize, pageNum int, requiredTags []string) (pids []playlist.PlaylistID, err error) {
     start := pageNum * pageSize
-    
+
     query := scoringQueryHeader
     params := []interface{}{start, pageSize}
     if len(requiredTags) > 0 {
@@ -39,18 +39,18 @@ func (db *Database) GetSortedPlaylistIDs(pageSize, pageNum int, requiredTags []s
             if i > 0 {
                 query += " or "
             }
-            query += fmt.Sprintf("tag = $%d", i + 3)
+            query += fmt.Sprintf("tag = $%d", i+3)
             params = append(params, tag)
         }
         query += "))"
     }
     query += scoringQueryFooter
-    
+
     rows, err := db.getQueryable().Query(query, params...)
     if err != nil {
         return nil, err
     }
-    
+
     for rows.Next() {
         var pid playlist.PlaylistID
         var score float32
@@ -60,12 +60,12 @@ func (db *Database) GetSortedPlaylistIDs(pageSize, pageNum int, requiredTags []s
         }
         pids = append(pids, pid)
     }
-    
+
     err = rows.Err()
     if err != nil {
         return nil, err
     }
-    
+
     return pids, nil
 }
 
@@ -79,7 +79,7 @@ func (db *Database) GetPlaylistRecord(pid playlist.PlaylistID) (title string, ow
         }
         return "", 0, err
     }
-    
+
     return title, ownerUid, nil
 }
 
@@ -89,33 +89,33 @@ func (db *Database) GetPlaylist(pid playlist.PlaylistID) (p *playlist.Playlist, 
     if err != nil {
         return nil, err
     }
-    
+
     owner, err := db.GetUser(ownerUid)
     if err != nil {
         return nil, err
     }
-    
+
     stars, err := db.GetPlaylistStars(pid)
     if err != nil {
         return nil, err
     }
-    
+
     tags, err := db.GetPlaylistTags(pid)
     if err != nil {
         return nil, err
     }
-    
+
     entries, err := db.GetPlaylistEntries(pid)
     if err != nil {
         return nil, err
     }
-    
+
     return &playlist.Playlist{
-        Pid: pid,
-        Title: title,
-        Owner: owner,
-        Stars: stars,
-        Tags: tags,
+        Pid:     pid,
+        Title:   title,
+        Owner:   owner,
+        Stars:   stars,
+        Tags:    tags,
         Entries: entries,
     }, nil
 }
@@ -124,7 +124,7 @@ func (db *Database) CreatePlaylistRecord(title string, ownerUid playlist.UserID,
     if db.tx.tx == nil {
         return 0, wrapError(1, NotInTransactionError)
     }
-    
+
     row := db.tx.QueryRow("insert into mix_playlist (title, owner_uid, created, search_text) values ($1, $2, timestamp 'now', $3) returning id", title, ownerUid, searchText)
     err = row.Scan(&newPid)
     if err != nil {
@@ -140,33 +140,33 @@ func (db *Database) CreatePlaylist(p *playlist.Playlist) (err error) {
     if db.tx.tx == nil {
         return wrapError(1, NotInTransactionError)
     }
-    
+
     searchText := p.Title
     for _, tag := range p.Tags {
         searchText += " " + tag
     }
     searchText = strings.ToLower(searchText)
-    
+
     pid, err := db.CreatePlaylistRecord(p.Title, p.Owner.Uid, searchText)
     if err != nil {
         return err
     }
     p.Pid = pid
-    
+
     err = db.AddPlaylistTags(pid, p.Tags...)
     if err != nil {
         return err
     }
-    
+
     for i, entry := range p.Entries {
         eid, err := db.CreatePlaylistEntry(i, pid, entry)
         if err != nil {
             return err
         }
-        
+
         entry.Eid = eid
     }
-    
+
     return nil
 }
 
@@ -174,9 +174,9 @@ func (db *Database) SearchPlaylists(pageSize, pageNum int, keywords ...string) (
     start := pageNum * pageSize
     params := []interface{}{start, pageSize}
     query := "select pid from mix_playlist"
-    
+
     for i, keyword := range keywords {
-        params = append(params, "%" + patternEscape(keyword) + "%")
+        params = append(params, "%"+patternEscape(keyword)+"%")
         if i > 0 {
             query += " and "
         } else {
@@ -184,13 +184,13 @@ func (db *Database) SearchPlaylists(pageSize, pageNum int, keywords ...string) (
         }
         query += fmt.Sprintf("search_text like $%d", len(params))
     }
-    
+
     query += " limit $2 offset $1"
     rows, err := db.getQueryable().Query(query, params...)
     if err != nil {
         return nil, err
     }
-    
+
     for rows.Next() {
         var pid playlist.PlaylistID
         err = rows.Scan(&pid)
@@ -199,12 +199,11 @@ func (db *Database) SearchPlaylists(pageSize, pageNum int, keywords ...string) (
         }
         pids = append(pids, pid)
     }
-    
+
     err = rows.Err()
     if err != nil {
         return nil, err
     }
-    
+
     return pids, nil
 }
-

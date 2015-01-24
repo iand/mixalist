@@ -7,7 +7,7 @@ import (
 )
 
 type debugWrappedError struct {
-    err error
+    err  error
     file string
     line int
 }
@@ -25,7 +25,7 @@ func wrapError(level int, err error) error {
         _, file, line, ok := runtime.Caller(level + 1)
         if ok {
             err = debugWrappedError{
-                err: err,
+                err:  err,
                 file: file,
                 line: line,
             }

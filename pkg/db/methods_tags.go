@@ -10,7 +10,7 @@ func (db *Database) GetPlaylistTags(pid playlist.PlaylistID) (tags []string, err
     if err != nil {
         return nil, err
     }
-    
+
     for rows.Next() {
         var tag string
         err = rows.Scan(&tag)
@@ -19,12 +19,12 @@ func (db *Database) GetPlaylistTags(pid playlist.PlaylistID) (tags []string, err
         }
         tags = append(tags, tag)
     }
-    
+
     err = rows.Err()
     if err != nil {
         return nil, err
     }
-    
+
     return tags, nil
 }
 
@@ -32,27 +32,27 @@ func (db *Database) AddPlaylistTags(pid playlist.PlaylistID, tags ...string) (er
     if db.tx.tx == nil {
         return wrapError(1, NotInTransactionError)
     }
-    
+
     existingTags, err := db.GetPlaylistTags(pid)
     if err != nil {
         db.RollbackTx()
         return err
     }
-    
-    loop:
+
+loop:
     for _, tag := range tags {
         for _, existingTag := range existingTags {
             if tag == existingTag {
                 continue loop
             }
         }
-        
+
         _, err = db.tx.Exec("insert into mix_playlist_tag values ($1, $2)", pid, tag)
         if err != nil {
             db.RollbackTx()
             return err
         }
     }
-    
+
     return nil
 }
