@@ -71,7 +71,7 @@ func (db *Database) GetSortedPlaylistIDs(pageSize, pageNum int, requiredTags []s
 
 // Get only the information stored in the actual mix_playlist record.
 func (db *Database) GetPlaylistRecord(pid playlist.PlaylistID) (title string, ownerUid playlist.UserID, parentPid playlist.PlaylistID, err error) {
-    row := db.getQueryable().QueryRow("select title, owner_uid, parent_pid from mix_playlist where pid = $1", pid)
+    row := db.getQueryable().QueryRow("select title, owner_uid, coalesce(parent_pid, 0) from mix_playlist where pid = $1", pid)
     err = row.Scan(&title, &ownerUid, &parentPid)
     if err != nil {
         if isNoRowsError(err) {
