@@ -5,7 +5,8 @@ package db
 // 2) if the change requires modificiation of the table schemas, update the
 //    schemas here and in schema.sql
 // 3) add a DatabaseUpdate for migration of existing data to Updates
-// 4) commit all of the above as a single commit
+// 4) log the update in the schema version changelog at the bottom of schema.sql
+// 5) commit all of the above as a single commit
 
 // Latest version of the database
 const Latest DatabaseVersion = 5
