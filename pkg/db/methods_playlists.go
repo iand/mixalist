@@ -3,6 +3,7 @@ package db
 import (
     "fmt"
     "github.com/iand/mixalist/pkg/playlist"
+    "strings"
 )
 
 // $1 - pagination start index
@@ -119,12 +120,12 @@ func (db *Database) GetPlaylist(pid playlist.PlaylistID) (p *playlist.Playlist, 
     }, nil
 }
 
-func (db *Database) CreatePlaylistRecord(title string, ownerUid playlist.UserID) (newPid playlist.PlaylistID, err error) {
+func (db *Database) CreatePlaylistRecord(title string, ownerUid playlist.UserID, searchText string) (newPid playlist.PlaylistID, err error) {
     if db.tx.tx == nil {
         return 0, wrapError(1, NotInTransactionError)
     }
     
-    row := db.tx.QueryRow("insert into mix_playlist (title, owner_uid, created) values ($1, $2, timestamp 'now') returning id", title, ownerUid)
+    row := db.tx.QueryRow("insert into mix_playlist (title, owner_uid, created, search_text) values ($1, $2, timestamp 'now', $3) returning id", title, ownerUid, searchText)
     err = row.Scan(&newPid)
     if err != nil {
         db.RollbackTx()
@@ -140,7 +141,13 @@ func (db *Database) CreatePlaylist(p *playlist.Playlist) (err error) {
         return wrapError(1, NotInTransactionError)
     }
     
-    pid, err := db.CreatePlaylistRecord(p.Title, p.Owner.Uid)
+    searchText := p.Title
+    for _, tag := range p.Tags {
+        searchText += " " + tag
+    }
+    searchText = strings.ToLower(searchText)
+    
+    pid, err := db.CreatePlaylistRecord(p.Title, p.Owner.Uid, searchText)
     if err != nil {
         return err
     }
