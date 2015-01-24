@@ -15,6 +15,25 @@
       <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
+
+    <style>
+		#search .modal-body {
+			max-height: 500px;
+			overflow-y: scroll;
+		}
+
+		#search .search-preview {
+			max-width: 128px;
+			max-height: 96px;
+		}
+
+		#search .searchrow {
+			padding-top: 5px;
+		}
+
+    </style>
+
+
   </head>
   <body>
   <div class="container-fluid">
@@ -25,7 +44,7 @@
 	    <div class="col-md-11">
 			<h2> Remixing {{.playlist.Title}} </h2>
 		</div>
-	
+
 	</div>
 
 	<div class="row">
@@ -45,7 +64,7 @@
 		<div class="col-md-9">
 			<button class="btn btn-primary " type="button" data-toggle="modal" data-target="#search" >Add Music</button>
 		</div>
-	</div>	
+	</div>
 
 	{{range .playlist.Entries}}
 	<div class="row">
@@ -76,35 +95,73 @@
 	</div>
   </div>
 
-  <div class="modal fade" id="search" tabindex="-1" role="dialog" aria-labelledby="searchtitle" aria-hidden="true">
+  <div class="modal" id="search" tabindex="-1" role="dialog" aria-labelledby="searchtitle" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="searchtitle">Modal title</h4>
+        <h4 class="modal-title" id="searchtitle">Add music...</h4>
       </div>
 
       <div class="modal-body">
-	       <div class="input-group">
-            <input type="text" class="form-control" placeholder="Search for music..">
+	    <div class="input-group">
+            <input type="text" class="form-control" placeholder="Search for music.." id="searchbox">
             <span class="input-group-btn">
-              <button class="btn btn-primary" type="button">Go!</button>
+              <button class="btn btn-primary" type="button" id="searchbtn">Go!</button>
             </span>
+     	</div>
+     	<br>
+     	<div id="searchresults">
      	</div>
       </div>
 
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
       </div>
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
-    
+
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="/js/bootstrap.min.js"></script>
+
+	<script type="text/javascript">
+
+    function search(q) {
+        if (q == "") {
+        	return
+        }
+
+       	$.getJSON("/s?q="+encodeURIComponent(q), function( data ) {
+			var items = [];
+			$.each( data['results'], function( index, val ) {
+				items.push( "<div class='row searchrow' ><div class='col-md-3'><img class='media-object search-preview' src='" +val['previewurl']+"' width='128'></div><div class='col-md-6'><h4 class='media-heading'>" + val['title'] + "</h4></div><div class='col-md-3'><button type='button' class='btn btn-success pull-right'><span class='glyphicon glyphicon-plus-sign' aria-hidden='true'></span> Add</button></div></div>" );
+			});
+			$("#searchresults").html(items.join(""));
+		});
+
+    }
+
+	$(document).ready(function() {
+        // Continually update search results as characters are typed
+        $("#searchbtn").click(function() {
+            // Make search inputs are case insensitive
+            var q = $("#searchbox").val().toLowerCase();
+            search(q);
+        });
+
+		$('#search').on('show.bs.modal', function (event) {
+			$("#searchbox").val("");
+			$("#searchresults").html("");
+		});
+
+    });
+
+    </script>
+
+
   </body>
 </html>

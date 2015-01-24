@@ -4,12 +4,18 @@ import (
 	"fmt"
 	"github.com/GeertJohan/go.rice"
 	"github.com/iand/mixalist/pkg/db"
+	"github.com/iand/mixalist/pkg/names"
 	"github.com/iand/mixalist/pkg/playlist"
 	"html/template"
+	"math/rand"
 	"net/http"
+	"strconv"
+	"time"
 )
 
 func viewfrontpage(w http.ResponseWriter, r *http.Request) {
+	rand.Seed(time.Now().UnixNano())
+
 	d, err := db.Connect(true)
 
 	if err != nil {
@@ -41,8 +47,12 @@ func viewfrontpage(w http.ResponseWriter, r *http.Request) {
 	templateData, _ := box.String("frontpage.html")
 	t, _ := template.New("frontpage.html").Parse(templateData)
 
+	// Fake user id - temporary
+	uid := strconv.FormatInt(rand.Int63n(256*256)) + "0000000"
+	username := names.NewName(uid)
 	data := map[string]interface{}{
-
+		"uid":       uid,
+		"username":  username,
 		"playlists": playlists,
 	}
 
