@@ -41,3 +41,14 @@ func (db Database) GetPlaylistEntries(pid playlist.PlaylistID) (entries []*playl
     
     return entries, nil
 }
+
+func (db Database) CreatePlaylistEntry(tx debugWrappedTx, index int, pid playlist.PlaylistID, entry *playlist.Entry) (newEid playlist.EntryID, err error) {
+    duration := int(entry.Duration / time.Second)
+    row := tx.QueryRow("insert into mix_playlist_entry (pid, index, yt_id, title, artist, album, duration) values ($1, $2, $3, $4, $5, $6, $7) returning eid", pid, index, entry.Ytid, entry.Title, entry.Artist, entry.Album, duration)
+    err = row.Scan(&newEid)
+    if err != nil {
+        tx.Rollback()
+        return 0, err
+    }
+    return newEid, nil
+}
