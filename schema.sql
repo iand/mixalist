@@ -1,3 +1,11 @@
+# Schema version 1
+
+create table version (
+    version     integer,                            # current database version
+);
+
+
+
 create table user (
     uid         serial primary key                  # user ID
 );
