@@ -48,7 +48,7 @@ func (db *Database) CreatePlaylistEntry(index int, pid playlist.PlaylistID, entr
     }
     
     duration := int(entry.Duration / time.Second)
-    row := db.tx.QueryRow("insert into mix_playlist_entry (pid, index, yt_id, title, artist, album, duration, search_text) values ($1, $2, $3, $4, $5, $6, $7, $4 || ' ' || $5 || ' ' || $6) returning eid", pid, index, entry.Ytid, entry.Title, entry.Artist, entry.Album, duration)
+    row := db.tx.QueryRow("insert into mix_playlist_entry (pid, index, yt_id, title, artist, album, duration, search_text) values ($1, $2, $3, $4, $5, $6, $7, lower($4 || ' ' || $5 || ' ' || $6)) returning eid", pid, index, entry.Ytid, entry.Title, entry.Artist, entry.Album, duration)
     err = row.Scan(&newEid)
     if err != nil {
         db.RollbackTx()
