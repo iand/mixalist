@@ -11,6 +11,9 @@ import (
 func main() {
 
 	router := mux.NewRouter()
+	router.PathPrefix("/css/").Handler(http.StripPrefix("/css/", http.FileServer(rice.MustFindBox("css").HTTPBox())))
+	router.PathPrefix("/fonts/").Handler(http.StripPrefix("/fonts/", http.FileServer(rice.MustFindBox("fonts").HTTPBox())))
+	router.PathPrefix("/js/").Handler(http.StripPrefix("/js/", http.FileServer(rice.MustFindBox("js").HTTPBox())))
 
 	router.Path("/hello").HandlerFunc(hello)
 	router.Path("/").HandlerFunc(frontpage)
