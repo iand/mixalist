@@ -6,7 +6,7 @@ import (
 
 // Get the tags associated with a playlist.
 func (db *Database) GetPlaylistTags(pid playlist.PlaylistID) (tags []string, err error) {
-    rows, err := db.getQueryable().Query("SELECT tag FROM mix_playlist_tag WHERE pid = $1", pid)
+    rows, err := db.getQueryable().Query("select tag from mix_playlist_tag where pid = $1", pid)
     if err != nil {
         return nil, err
     }
@@ -47,7 +47,7 @@ func (db *Database) AddPlaylistTags(pid playlist.PlaylistID, tags ...string) (er
             }
         }
         
-        _, err = db.tx.Exec("INSERT INTO mix_playlist_tag VALUES ($1, $2)", pid, tag)
+        _, err = db.tx.Exec("insert into mix_playlist_tag values ($1, $2)", pid, tag)
         if err != nil {
             db.RollbackTx()
             return err

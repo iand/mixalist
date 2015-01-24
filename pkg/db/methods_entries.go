@@ -8,7 +8,7 @@ import (
 
 // Gets the entries in a playlist.
 func (db *Database) GetPlaylistEntries(pid playlist.PlaylistID) (entries []*playlist.Entry, err error) {
-    rows, err := db.getQueryable().Query("SELECT eid, yt_id, title, artist, album, duration FROM mix_playlist_entry WHERE pid = $1 ORDER BY index", pid)
+    rows, err := db.getQueryable().Query("select eid, yt_id, title, artist, album, duration from mix_playlist_entry where pid = $1 order by index", pid)
     if err != nil {
         return nil, err
     }
