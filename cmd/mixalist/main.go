@@ -18,6 +18,7 @@ func main() {
 	router.PathPrefix("/images/").Handler(http.StripPrefix("/images/", http.FileServer(rice.MustFindBox("images").HTTPBox())))
 
 	router.Path("/hello").HandlerFunc(hello)
+	router.Path("/s").HandlerFunc(searchHandler)
 	router.Path("/").HandlerFunc(frontpage)
 
 	server := &http.Server{
