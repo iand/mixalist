@@ -8,7 +8,7 @@ package db
 // 4) commit all of the above as a single commit
 
 // Latest version of the database
-const Latest DatabaseVersion = 3
+const Latest DatabaseVersion = 4
 
 // Database update history.
 // Field 'From' and 'To' are the version numbers before and after the update.
@@ -32,6 +32,13 @@ var Updates = []*DatabaseUpdate{
             )`,
         },
     },
+    &DatabaseUpdate{
+        From: 3,
+        To: 4,
+        SQL: []string{
+            "alter table mix_playlist add column created timestamp",
+        },
+    },
 }
 
 // LatestSchema is a list of table creation statements, accurate to the version
@@ -45,7 +52,8 @@ var LatestSchema = []Table{
     Table{"mix_playlist", `create table mix_playlist (
         pid         serial primary key,
         title       varchar(255),
-        owner_uid   integer references mix_user (uid)
+        owner_uid   integer references mix_user (uid),
+        created     timestamp
     )`},
 
     Table{"mix_playlist_star", `create table mix_playlist_star (

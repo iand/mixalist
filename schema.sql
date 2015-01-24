@@ -1,4 +1,4 @@
-# Schema version 3
+# Schema version 4
 
 create table mix_version (
     version     integer,                                # current database version
@@ -14,7 +14,8 @@ create table mix_user (
 create table mix_playlist (
     pid         serial primary key,                     # playlist ID
     title       varchar(255),                           # title of playlist
-    owner_uid   integer references mix_user (uid)       # ID of user that owns this playlist
+    owner_uid   integer references mix_user (uid),      # ID of user that owns this playlist
+    created     timestamp                               # timestamp of creation of the playlist
 );
 
 create table mix_playlist_star (
@@ -46,4 +47,5 @@ Schema version changelog:
     1: initial version
     2: add mix_user.name column
     3: add mix_playlist_star table with columns pid, uid, tstamp
+    4: add mix_player.created column
 */
