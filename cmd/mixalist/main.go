@@ -15,7 +15,8 @@ func main() {
 	router.PathPrefix("/images/").Handler(http.StripPrefix("/images/", http.FileServer(rice.MustFindBox("images").HTTPBox())))
 
 	router.Path("/s").HandlerFunc(searchHandler)
-	router.Path("/p").HandlerFunc(viewplaylist)
+	router.Path("/p/{pid:[0-9]+}").HandlerFunc(viewplaylist)
+	router.Path("/r").HandlerFunc(remixplaylist)
 	router.Path("/").HandlerFunc(viewfrontpage)
 
 	server := &http.Server{

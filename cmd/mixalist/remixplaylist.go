@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"github.com/GeertJohan/go.rice"
-	"github.com/gorilla/mux"
 	"github.com/iand/mixalist/pkg/db"
 	"github.com/iand/mixalist/pkg/playlist"
 	"html/template"
@@ -11,10 +10,9 @@ import (
 	"strconv"
 )
 
-func viewplaylist(w http.ResponseWriter, r *http.Request) {
+func remixplaylist(w http.ResponseWriter, r *http.Request) {
 
-	vars := mux.Vars(r)
-	pidstr := vars["pid"]
+	pidstr := r.URL.Query().Get("pid")
 	pid, err := strconv.Atoi(pidstr)
 	if err != nil {
 		http.NotFound(w, r)
@@ -38,8 +36,8 @@ func viewplaylist(w http.ResponseWriter, r *http.Request) {
 
 	box, _ := rice.FindBox("templates")
 
-	templateData, _ := box.String("playlist.html")
-	t, _ := template.New("playlist.html").Parse(templateData)
+	templateData, _ := box.String("remixplaylist.html")
+	t, _ := template.New("remixplaylist.html").Parse(templateData)
 
 	data := map[string]interface{}{
 

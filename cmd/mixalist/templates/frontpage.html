@@ -23,9 +23,9 @@
       {{range .playlists}}
       <div class="col-sm-6 col-md-2">
         <div class="thumbnail">
-          <img src="images/sample2.jpg" alt="..." height="196" width="196">
+        <a href="/p/{{.Pid}}"><img src="images/sample2.jpg" alt="..." height="196" width="196"></a>
           <div class="caption">
-            <h4>{{.Title}}</h4>
+            <h4><a href ="/p/{{.Pid}}">{{.Title}}</a></h4>
             <p>
               <em>by {{.Owner.Name}}</em>
               <br>featuring Taylor Swift, Band 1, Band 2, Band 3

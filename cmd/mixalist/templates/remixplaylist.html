@@ -23,25 +23,25 @@
 	    <div class="col-md-1">
 	    </div>
 	    <div class="col-md-2">
-	        <img class="media-object" src="/images/sample2.jpg" alt="...">
+	        
 		</div>
 		<div class="col-md-9">
-			<h2>{{.playlist.Title}}</h2>
-			<h3>by {{.playlist.Owner.Name}}</h3>
-			<br>
-			<div>
-			<button type="button" class="btn btn-warning btn-xs">
-			<span class="glyphicon glyphicon-star" aria-hidden="true"></span> <span class="badge">{{.playlist.Stars}}</span>
-			</button>
-			{{range .playlist.Tags}}
-			<span class="label label-info">{{.}}</span>
-			{{end}}
+			 <div class="input-group">
+			      <input type="text" class="form-control" placeholder="Search for music..">
+			      <span class="input-group-btn">
+			        <button class="btn btn-default" type="button">Go!</button>
+			      </span>
 			</div>
+			<br>
+			
 	    </div>
 	</div>
 
 	<div class="row" style="border-bottom:1px solid; padding:6px;"> 
 	</div>
+
+	
+    </div>
 
 	{{range .playlist.Entries}}
 	<div class="row">
@@ -61,9 +61,15 @@
 		<div class="col-md-9">
 			<h3> {{.Title}} </h3>
 			<h4> {{.Artist}} </h4>
+			<button type="button" class="btn btn-default">Delete</button>
 		</div>
 	</div>
 	{{end}}
+	<div class="row">
+	<div class="input-group">
+			<input type="text" class="form-control" placeholder="Name of Playlist" aria-describedby="basic-addon2"><button type="button" class="btn btn-default">Save</button>
+	</div>
+	</div>
   </div>
 
     
