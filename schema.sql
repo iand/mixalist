@@ -1,4 +1,4 @@
-# Schema version 4
+# Schema version 5
 
 create table mix_version (
     version     integer,                                # current database version
@@ -38,7 +38,8 @@ create table mix_playlist_entry (
     title       varchar(255),                           # track title (can be edited)
     artist      varchar(255),                           # track artist (can be edited)
     album       varchar(255),                           # track album (can be edited)
-    duration    smallint                                # duration of video in seconds
+    duration    smallint,                               # duration of video in seconds
+    search_text varchar                                 # concatenation of title, artist and album (for searching)
 );
 
 
@@ -48,4 +49,5 @@ Schema version changelog:
     2: add mix_user.name column
     3: add mix_playlist_star table with columns pid, uid, tstamp
     4: add mix_player.created column
+    5: add mix_playlist_entry.search_text column
 */

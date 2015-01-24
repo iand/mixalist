@@ -8,7 +8,7 @@ package db
 // 4) commit all of the above as a single commit
 
 // Latest version of the database
-const Latest DatabaseVersion = 4
+const Latest DatabaseVersion = 5
 
 // Database update history.
 // Field 'From' and 'To' are the version numbers before and after the update.
@@ -37,6 +37,14 @@ var Updates = []*DatabaseUpdate{
         To: 4,
         SQL: []string{
             "alter table mix_playlist add column created timestamp",
+        },
+    },
+    &DatabaseUpdate{
+        From: 4,
+        To: 5,
+        SQL: []string{
+            "alter table mix_playlist_entry add column search_text varchar",
+            "update mix_playlist_entry set search_text = title || ' ' || artist || ' ' || album",
         },
     },
 }
@@ -76,6 +84,7 @@ var LatestSchema = []Table{
         title       varchar(255),
         artist      varchar(255),
         album       varchar(255),
-        duration    smallint
+        duration    smallint,
+        search_text varchar
     )`},
 }
