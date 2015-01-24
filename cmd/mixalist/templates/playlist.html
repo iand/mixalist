@@ -20,31 +20,51 @@
   <div class="container-fluid">
 
     <div class="row">
-      {{range .playlists}}
-      <div class="col-sm-6 col-md-2">
-        <div class="thumbnail">
-          <img src="images/sample2.jpg" alt="..." height="196" width="196">
-          <div class="caption">
-            <h4>{{.Title}}</h4>
-            <p>
-              <em>by {{.Owner.Name}}</em>
-              <br>featuring Taylor Swift, Band 1, Band 2, Band 3
-            </p> 
-          
-            <div>
-              <button type="button" class="btn btn-warning btn-xs">
-                <span class="glyphicon glyphicon-star" aria-hidden="true"></span> <span class="badge">{{.Stars}}</span>
-              </button>
-              {{range .Tags}}
-              <span class="label label-info">{{.}}</span>
-              {{end}}
-            </div>
-          </div>
-        </div>
-      </div>
-      {{end}}
+	    <div class="col-md-1">
+	    </div>
+	    <div class="col-md-2">
+	        <img class="media-object" src="images/sample2.jpg" alt="...">
+		</div>
+		<div class="col-md-9">
+			<h2>{{.playlist.Title}}</h2>
+			<h3>by {{.playlist.Owner.Name}}</h3>
+			<br>
+			<div>
+			<button type="button" class="btn btn-warning btn-xs">
+			<span class="glyphicon glyphicon-star" aria-hidden="true"></span> <span class="badge">{{.playlist.Stars}}</span>
+			</button>
+			{{range .playlist.Tags}}
+			<span class="label label-info">{{.}}</span>
+			{{end}}
+			</div>
+	    </div>
+	</div>
+
+	<div class="row" style="border-bottom:1px solid; padding:6px;"> 
+	</div>
+
+	{{range .playlist.Entries}}
+	<div class="row">
+		<div class="col-md-1">
+		</div>
+
+		<div class="col-md-2">
+			<div class="media">
+			  <div class="media-left media-middle">
+			    <a href="#">
+			      <img class="media-object" src="images/sample2.jpg" alt="..." height="128" width="128" >
+			    </a>
+			  </div>
+			</div>
+		</div>
+
+		<div class="col-md-9">
+			<h3> {{.Title}} </h3>
+			<h4> {{.Artist}} </h4>
+		</div>
+	</div>
+	{{end}}
   </div>
-</div>
 
     
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
