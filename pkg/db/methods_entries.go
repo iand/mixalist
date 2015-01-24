@@ -1,6 +1,7 @@
 package db
 
 import (
+    "fmt"
     "github.com/iand/mixalist/pkg/playlist"
     "time"
 )
@@ -55,4 +56,44 @@ func (db *Database) CreatePlaylistEntry(index int, pid playlist.PlaylistID, entr
         return 0, err
     }
     return newEid, nil
+}
+
+func (db *Database) SearchEntries(pageSize, pageNum int, keywords ...string) (entries []*playlist.Entry, err error) {
+    start := pageNum * pageSize
+    params := []interface{}{start, pageSize}
+    query := "select eid, yt_id, title, artist, album, duration from mix_playlist_entry"
+    
+    for i, keyword := range keywords {
+        params = append(params, "%" + patternEscape(keyword) + "%")
+        if i > 0 {
+            query += " and "
+        } else {
+            query += " where "
+        }
+        query += fmt.Sprintf("search_text like $%d", len(params))
+    }
+    
+    query += " limit $2 offset $1"
+    rows, err := db.getQueryable().Query(query, params...)
+    if err != nil {
+        return nil, err
+    }
+    
+    for rows.Next() {
+        var duration int
+        entry := new(playlist.Entry)
+        err = rows.Scan(&entry.Eid, &entry.Ytid, &entry.Title, &entry.Artist, &entry.Album, &duration)
+        if err != nil {
+            return nil, err
+        }
+        entry.Duration = time.Duration(duration) * time.Second
+        entries = append(entries, entry)
+    }
+    
+    err = rows.Err()
+    if err != nil {
+        return nil, err
+    }
+    
+    return entries, nil
 }
