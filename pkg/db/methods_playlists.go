@@ -69,7 +69,7 @@ func (db Database) GetSortedPlaylistIDs(pageSize, pageNum int, requiredTags []st
 }
 
 // Get only the information stored in the actual mix_playlist record.
-func (db Database) GetPlaylistInfo(pid playlist.PlaylistID) (title string, ownerUid playlist.UserID, err error) {
+func (db Database) GetPlaylistRecord(pid playlist.PlaylistID) (title string, ownerUid playlist.UserID, err error) {
     row := db.conn.QueryRow("SELECT title, owner_uid FROM mix_playlist WHERE pid = $1", pid)
     err = row.Scan(&title, &ownerUid)
     if err != nil {
@@ -84,7 +84,7 @@ func (db Database) GetPlaylistInfo(pid playlist.PlaylistID) (title string, owner
 
 // Get all information about a playlist.
 func (db Database) GetPlaylist(pid playlist.PlaylistID) (p *playlist.Playlist, err error) {
-    title, ownerUid, err := db.GetPlaylistInfo(pid)
+    title, ownerUid, err := db.GetPlaylistRecord(pid)
     if err != nil {
         return nil, err
     }
@@ -117,4 +117,40 @@ func (db Database) GetPlaylist(pid playlist.PlaylistID) (p *playlist.Playlist, e
         Tags: tags,
         Entries: entries,
     }, nil
+}
+
+func (db Database) CreatePlaylistRecord(tx debugWrappedTx, title string, ownerUid playlist.UserID) (newPid playlist.PlaylistID, err error) {
+    row := tx.QueryRow("insert into mix_playlist (title, owner_uid, created) values ($1, $2, timestamp 'now') returning id", title, ownerUid)
+    err = row.Scan(&newPid)
+    if err != nil {
+        tx.Rollback()
+        return 0, err
+    }
+    return newPid, nil
+}
+
+// Create a new playlist with the given data. p.Pid and p.Entries[i].Eid are set
+// to their newly assigned values.
+func (db Database) CreatePlaylist(tx debugWrappedTx, p *playlist.Playlist) (err error) {
+    pid, err := db.CreatePlaylistRecord(tx, p.Title, p.Owner.Uid)
+    if err != nil {
+        return err
+    }
+    p.Pid = pid
+    
+    err = db.AddPlaylistTags(tx, pid, p.Tags...)
+    if err != nil {
+        return err
+    }
+    
+    for i, entry := range p.Entries {
+        eid, err := db.CreatePlaylistEntry(tx, i, pid, entry)
+        if err != nil {
+            return err
+        }
+        
+        entry.Eid = eid
+    }
+    
+    return nil
 }
