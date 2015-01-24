@@ -14,8 +14,12 @@ type DatabaseUpdate struct {
 
 // Check the database version and perform updates if necessary. A flag indicating
 // whether the database was previously empty is returned.
-func (db Database) doUpdates(tx debugWrappedTx) (empty bool, err error) {
-    current, empty, err := db.getVersion(tx)
+func (db *Database) doUpdates() (empty bool, err error) {
+    if db.tx.tx == nil {
+        return false, wrapError(1, NotInTransactionError)
+    }
+    
+    current, empty, err := db.getVersion()
     if err != nil {
         return false, err
     }
@@ -29,7 +33,7 @@ func (db Database) doUpdates(tx debugWrappedTx) (empty bool, err error) {
         
         for _, update := range Updates {
             if update.From == current {
-                err = db.doUpdate(tx, update)
+                err = db.doUpdate(update)
                 if err != nil {
                     return false, err
                 }
@@ -53,22 +57,27 @@ func (db Database) doUpdates(tx debugWrappedTx) (empty bool, err error) {
 }
 
 // Execute a DatabaseUpdate and update the version number stored in the database.
-func (db Database) doUpdate(tx debugWrappedTx, update *DatabaseUpdate) (err error) {
+func (db *Database) doUpdate(update *DatabaseUpdate) (err error) {
+    if db.tx.tx == nil {
+        return wrapError(1, NotInTransactionError)
+    }
+    
     if db.logging {
         log.Printf("Performing database update from version %d to version %d", update.From, update.To)
     }
     
     for _, stmt := range update.SQL {
-        _, err = tx.Exec(stmt)
+        _, err = db.tx.Exec(stmt)
         if err != nil {
-            tx.Rollback()
+            db.tx.Rollback()
+            db.tx.tx = nil
             return err
         }
     }
     
-    _, err = tx.Exec("UPDATE mix_version SET version = $1", update.To)
+    _, err = db.tx.Exec("UPDATE mix_version SET version = $1", update.To)
     if err != nil {
-        tx.Rollback()
+        db.RollbackTx()
         return err
     }
     
@@ -78,22 +87,26 @@ func (db Database) doUpdate(tx debugWrappedTx, update *DatabaseUpdate) (err erro
 // Get the version currently stored in the database, setting the version to the
 // latest if it is not set. The version number and a flag indicating whether the
 // database was previously empty are returned.
-func (db Database) getVersion(tx debugWrappedTx) (v DatabaseVersion, empty bool, err error) {
-    err = db.conn.QueryRow("SELECT version FROM mix_version").Scan(&v)
+func (db *Database) getVersion() (v DatabaseVersion, empty bool, err error) {
+    if db.tx.tx == nil {
+        return 0, false, wrapError(1, NotInTransactionError)
+    }
+    
+    err = db.getQueryable().QueryRow("SELECT version FROM mix_version").Scan(&v)
     if err != nil {
         if isNonexistentTableError(err) {
             // version table does not exist -> database is empty
             if db.logging {
                 log.Printf("Creating table mix_version")
             }
-            _, err = tx.Exec("CREATE TABLE mix_version (version integer)")
+            _, err = db.tx.Exec("CREATE TABLE mix_version (version integer)")
             if err != nil {
-                tx.Rollback()
+                db.RollbackTx()
                 return 0, false, err
             }
-            _, err = tx.Exec("INSERT INTO mix_version VALUES ($1)", Latest)
+            _, err = db.tx.Exec("INSERT INTO mix_version VALUES ($1)", Latest)
             if err != nil {
-                tx.Rollback()
+                db.RollbackTx()
                 return 0, false, err
             }
             return Latest, true, nil
@@ -104,15 +117,16 @@ func (db Database) getVersion(tx debugWrappedTx) (v DatabaseVersion, empty bool,
             if db.logging {
                 log.Printf("Version table exists but is empty - was the database in a corrupted state?")
             }
-            _, err = tx.Exec("INSERT INTO mix_version VALUES ($1)", Latest)
+            _, err = db.tx.Exec("INSERT INTO mix_version VALUES ($1)", Latest)
             if err != nil {
-                tx.Rollback()
+                db.RollbackTx()
                 return 0, false, err
             }
             return Latest, true, nil
         } else {
             // some other error
-            tx.Rollback()
+            db.tx.Rollback()
+            db.tx.tx = nil
             return 0, false, err
         }
     }

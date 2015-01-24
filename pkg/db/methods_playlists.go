@@ -27,7 +27,7 @@ const scoringQueryFooter = `
 // Sort the playlists by score and return those that have any of the tags specified
 // in requiredTags. If requiredTags is empty, all playlists are sorted. The results
 // are paginated using the pageSize and pageNum arguments (pageNum is 0-indexed).
-func (db Database) GetSortedPlaylistIDs(pageSize, pageNum int, requiredTags []string) (pids []playlist.PlaylistID, err error) {
+func (db *Database) GetSortedPlaylistIDs(pageSize, pageNum int, requiredTags []string) (pids []playlist.PlaylistID, err error) {
     start := pageNum * pageSize
     
     query := scoringQueryHeader
@@ -45,7 +45,7 @@ func (db Database) GetSortedPlaylistIDs(pageSize, pageNum int, requiredTags []st
     }
     query += scoringQueryFooter
     
-    rows, err := db.conn.Query(query, params...)
+    rows, err := db.getQueryable().Query(query, params...)
     if err != nil {
         return nil, err
     }
@@ -69,8 +69,8 @@ func (db Database) GetSortedPlaylistIDs(pageSize, pageNum int, requiredTags []st
 }
 
 // Get only the information stored in the actual mix_playlist record.
-func (db Database) GetPlaylistInfo(pid playlist.PlaylistID) (title string, ownerUid playlist.UserID, err error) {
-    row := db.conn.QueryRow("SELECT title, owner_uid FROM mix_playlist WHERE pid = $1", pid)
+func (db *Database) GetPlaylistRecord(pid playlist.PlaylistID) (title string, ownerUid playlist.UserID, err error) {
+    row := db.getQueryable().QueryRow("SELECT title, owner_uid FROM mix_playlist WHERE pid = $1", pid)
     err = row.Scan(&title, &ownerUid)
     if err != nil {
         if isNoRowsError(err) {
@@ -83,8 +83,8 @@ func (db Database) GetPlaylistInfo(pid playlist.PlaylistID) (title string, owner
 }
 
 // Get all information about a playlist.
-func (db Database) GetPlaylist(pid playlist.PlaylistID) (p *playlist.Playlist, err error) {
-    title, ownerUid, err := db.GetPlaylistInfo(pid)
+func (db *Database) GetPlaylist(pid playlist.PlaylistID) (p *playlist.Playlist, err error) {
+    title, ownerUid, err := db.GetPlaylistRecord(pid)
     if err != nil {
         return nil, err
     }
@@ -117,4 +117,48 @@ func (db Database) GetPlaylist(pid playlist.PlaylistID) (p *playlist.Playlist, e
         Tags: tags,
         Entries: entries,
     }, nil
+}
+
+func (db *Database) CreatePlaylistRecord(title string, ownerUid playlist.UserID) (newPid playlist.PlaylistID, err error) {
+    if db.tx.tx == nil {
+        return 0, wrapError(1, NotInTransactionError)
+    }
+    
+    row := db.tx.QueryRow("insert into mix_playlist (title, owner_uid, created) values ($1, $2, timestamp 'now') returning id", title, ownerUid)
+    err = row.Scan(&newPid)
+    if err != nil {
+        db.RollbackTx()
+        return 0, err
+    }
+    return newPid, nil
+}
+
+// Create a new playlist with the given data. p.Pid and p.Entries[i].Eid are set
+// to their newly assigned values.
+func (db *Database) CreatePlaylist(p *playlist.Playlist) (err error) {
+    if db.tx.tx == nil {
+        return wrapError(1, NotInTransactionError)
+    }
+    
+    pid, err := db.CreatePlaylistRecord(p.Title, p.Owner.Uid)
+    if err != nil {
+        return err
+    }
+    p.Pid = pid
+    
+    err = db.AddPlaylistTags(pid, p.Tags...)
+    if err != nil {
+        return err
+    }
+    
+    for i, entry := range p.Entries {
+        eid, err := db.CreatePlaylistEntry(i, pid, entry)
+        if err != nil {
+            return err
+        }
+        
+        entry.Eid = eid
+    }
+    
+    return nil
 }

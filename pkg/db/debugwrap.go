@@ -17,9 +17,12 @@ func (err debugWrappedError) Error() string {
     return fmt.Sprintf("[%s:%d] %s", err.file, err.line, err.err.Error())
 }
 
-func wrapError(err error) error {
+// level 0 = where wrapError is called
+// level 1 = where the caller of wrapError is called
+// etc.
+func wrapError(level int, err error) error {
     if err != nil {
-        _, file, line, ok := runtime.Caller(2)
+        _, file, line, ok := runtime.Caller(level + 1)
         if ok {
             err = debugWrappedError{
                 err: err,
@@ -37,17 +40,17 @@ type debugWrappedDB struct {
 
 func (d debugWrappedDB) Begin() (debugWrappedTx, error) {
     tx, err := d.db.Begin()
-    return debugWrappedTx{tx}, wrapError(err)
+    return debugWrappedTx{tx}, wrapError(1, err)
 }
 
 func (d debugWrappedDB) Exec(query string, args ...interface{}) (sql.Result, error) {
     result, err := d.db.Exec(query, args...)
-    return result, wrapError(err)
+    return result, wrapError(1, err)
 }
 
 func (d debugWrappedDB) Query(query string, args ...interface{}) (debugWrappedRows, error) {
     rows, err := d.db.Query(query, args...)
-    return debugWrappedRows{rows}, wrapError(err)
+    return debugWrappedRows{rows}, wrapError(1, err)
 }
 
 func (d debugWrappedDB) QueryRow(query string, args ...interface{}) debugWrappedRow {
@@ -59,7 +62,7 @@ type debugWrappedRow struct {
 }
 
 func (d debugWrappedRow) Scan(dest ...interface{}) error {
-    return wrapError(d.row.Scan(dest...))
+    return wrapError(1, d.row.Scan(dest...))
 }
 
 type debugWrappedRows struct {
@@ -67,16 +70,16 @@ type debugWrappedRows struct {
 }
 
 func (d debugWrappedRows) Close() error {
-    return wrapError(d.rows.Close())
+    return wrapError(1, d.rows.Close())
 }
 
 func (d debugWrappedRows) Columns() ([]string, error) {
     cols, err := d.rows.Columns()
-    return cols, wrapError(err)
+    return cols, wrapError(1, err)
 }
 
 func (d debugWrappedRows) Err() error {
-    return wrapError(d.rows.Err())
+    return wrapError(1, d.rows.Err())
 }
 
 func (d debugWrappedRows) Next() bool {
@@ -84,7 +87,7 @@ func (d debugWrappedRows) Next() bool {
 }
 
 func (d debugWrappedRows) Scan(dest ...interface{}) error {
-    return wrapError(d.rows.Scan(dest...))
+    return wrapError(1, d.rows.Scan(dest...))
 }
 
 type debugWrappedTx struct {
@@ -92,12 +95,17 @@ type debugWrappedTx struct {
 }
 
 func (d debugWrappedTx) Commit() error {
-    return wrapError(d.tx.Commit())
+    return wrapError(1, d.tx.Commit())
 }
 
 func (d debugWrappedTx) Exec(query string, args ...interface{}) (sql.Result, error) {
     result, err := d.tx.Exec(query, args...)
-    return result, wrapError(err)
+    return result, wrapError(1, err)
+}
+
+func (d debugWrappedTx) Query(query string, args ...interface{}) (debugWrappedRows, error) {
+    rows, err := d.tx.Query(query, args...)
+    return debugWrappedRows{rows}, wrapError(1, err)
 }
 
 func (d debugWrappedTx) QueryRow(query string, args ...interface{}) debugWrappedRow {
@@ -105,5 +113,5 @@ func (d debugWrappedTx) QueryRow(query string, args ...interface{}) debugWrapped
 }
 
 func (d debugWrappedTx) Rollback() error {
-    return wrapError(d.tx.Rollback())
+    return wrapError(1, d.tx.Rollback())
 }

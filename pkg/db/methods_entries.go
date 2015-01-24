@@ -6,18 +6,18 @@ import (
 )
 
 // Gets the entries in a playlist.
-func (db Database) GetPlaylistEntries(pid playlist.PlaylistID) (entries []*playlist.Entry, err error) {
-    rows, err := db.conn.Query("SELECT eid, index, yt_id, title, artist, album, duration FROM mix_playlist_entry WHERE pid = $1", pid)
+func (db *Database) GetPlaylistEntries(pid playlist.PlaylistID) (entries []*playlist.Entry, err error) {
+    rows, err := db.getQueryable().Query("SELECT eid, yt_id, title, artist, album, duration FROM mix_playlist_entry WHERE pid = $1 ORDER BY index", pid)
     if err != nil {
         return nil, err
     }
     
     for rows.Next() {
         var eid playlist.EntryID
-        var index, duration int
         var ytid, title, artist, album string
+        var duration int
         
-        err = rows.Scan(&eid, &index, &ytid, &title, &artist, &album, &duration)
+        err = rows.Scan(&eid, &ytid, &title, &artist, &album, &duration)
         if err != nil {
             return nil, err
         }
@@ -31,13 +31,7 @@ func (db Database) GetPlaylistEntries(pid playlist.PlaylistID) (entries []*playl
             Duration: time.Duration(duration) * time.Second,
         }
         
-        if index >= len(entries) {
-            entries2 := make([]*playlist.Entry, index, index*2)
-            copy(entries2, entries)
-            entries = entries2
-        }
-        
-        entries[index] = entry
+        entries = append(entries, entry)
     }
     
     err = rows.Err()
@@ -46,4 +40,19 @@ func (db Database) GetPlaylistEntries(pid playlist.PlaylistID) (entries []*playl
     }
     
     return entries, nil
+}
+
+func (db *Database) CreatePlaylistEntry(index int, pid playlist.PlaylistID, entry *playlist.Entry) (newEid playlist.EntryID, err error) {
+    if db.tx.tx == nil {
+        return 0, wrapError(1, NotInTransactionError)
+    }
+    
+    duration := int(entry.Duration / time.Second)
+    row := db.tx.QueryRow("insert into mix_playlist_entry (pid, index, yt_id, title, artist, album, duration) values ($1, $2, $3, $4, $5, $6, $7) returning eid", pid, index, entry.Ytid, entry.Title, entry.Artist, entry.Album, duration)
+    err = row.Scan(&newEid)
+    if err != nil {
+        db.RollbackTx()
+        return 0, err
+    }
+    return newEid, nil
 }
