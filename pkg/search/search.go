@@ -20,7 +20,7 @@ var (
 	}
 )
 
-func Search(query string) []Result {
+func Search(query string, max int) []Result {
 	results := []Result{}
 
 	done := make(chan bool, len(searchers))
@@ -41,6 +41,10 @@ func Search(query string) []Result {
 			return results
 		case r := <-res:
 			results = append(results, r)
+			max--
+			if max == 0 {
+				return results
+			}
 		case <-done:
 			remaining--
 			if remaining == 0 {
