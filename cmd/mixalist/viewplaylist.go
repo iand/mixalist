@@ -17,23 +17,23 @@ func viewplaylist(w http.ResponseWriter, r *http.Request) {
 
 		"playlist": playlist.Playlist{
 			Title: "Top Taylor Swift",
-			Owner: playlist.User{
+			Owner: &playlist.User{
 				Name: "agitated_weasle",
 			},
 			Stars: 59,
 			Tags: []string{
 				"love", "pop", "teen",
 			},
-			Entries: []playlist.Entry{
-				playlist.Entry{
+			Entries: []*playlist.Entry{
+				&playlist.Entry{
 					Title:  "Track1",
 					Artist: "Artist1",
 				},
-				playlist.Entry{
+				&playlist.Entry{
 					Title:  "Track2",
 					Artist: "Artist2",
 				},
-				playlist.Entry{
+				&playlist.Entry{
 					Title:  "Track3",
 					Artist: "Artist3",
 				},

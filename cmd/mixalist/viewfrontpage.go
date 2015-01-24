@@ -18,7 +18,7 @@ func viewfrontpage(w http.ResponseWriter, r *http.Request) {
 		"playlists": []playlist.Playlist{
 			playlist.Playlist{
 				Title: "Top Taylor Swift",
-				Owner: playlist.User{
+				Owner: &playlist.User{
 					Name: "agitated_weasle",
 				},
 				Stars: 59,
@@ -28,7 +28,7 @@ func viewfrontpage(w http.ResponseWriter, r *http.Request) {
 			},
 			playlist.Playlist{
 				Title: "Rainy Days",
-				Owner: playlist.User{
+				Owner: &playlist.User{
 					Name: "lonely_meerkat",
 				},
 				Stars: 107,

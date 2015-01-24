@@ -25,5 +25,3 @@ _testmain.go
 
 
 
-# keep database credentials out of public repo
-pkg/db/creds.go

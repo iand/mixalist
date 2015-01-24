@@ -45,12 +45,10 @@ func (d debugWrappedDB) Exec(query string, args ...interface{}) (sql.Result, err
     return result, wrapError(err)
 }
 
-/*
-func (d debugWrappedDB) Query(query string, args ...interface{}) (rows *debugWrappedRows, err error) {
-    rows, err = d.db.Query(query, args...)
+func (d debugWrappedDB) Query(query string, args ...interface{}) (debugWrappedRows, error) {
+    rows, err := d.db.Query(query, args...)
     return debugWrappedRows{rows}, wrapError(err)
 }
-*/
 
 func (d debugWrappedDB) QueryRow(query string, args ...interface{}) debugWrappedRow {
     return debugWrappedRow{d.db.QueryRow(query, args...)}
@@ -62,7 +60,32 @@ type debugWrappedRow struct {
 
 func (d debugWrappedRow) Scan(dest ...interface{}) error {
     return wrapError(d.row.Scan(dest...))
-} 
+}
+
+type debugWrappedRows struct {
+    rows *sql.Rows
+}
+
+func (d debugWrappedRows) Close() error {
+    return wrapError(d.rows.Close())
+}
+
+func (d debugWrappedRows) Columns() ([]string, error) {
+    cols, err := d.rows.Columns()
+    return cols, wrapError(err)
+}
+
+func (d debugWrappedRows) Err() error {
+    return wrapError(d.rows.Err())
+}
+
+func (d debugWrappedRows) Next() bool {
+    return d.rows.Next()
+}
+
+func (d debugWrappedRows) Scan(dest ...interface{}) error {
+    return wrapError(d.rows.Scan(dest...))
+}
 
 type debugWrappedTx struct {
     tx *sql.Tx
