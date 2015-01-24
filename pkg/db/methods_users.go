@@ -5,8 +5,8 @@ import (
 )
 
 // Get only the information stored in the actual mix_user record.
-func (db Database) GetUserInfo(uid playlist.UserID) (name string, err error) {
-    row := db.conn.QueryRow("SELECT name FROM mix_user WHERE uid = $1", uid)
+func (db *Database) GetUserInfo(uid playlist.UserID) (name string, err error) {
+    row := db.getQueryable().QueryRow("SELECT name FROM mix_user WHERE uid = $1", uid)
     err = row.Scan(&name)
     if err != nil {
         if isNoRowsError(err) {
@@ -19,7 +19,7 @@ func (db Database) GetUserInfo(uid playlist.UserID) (name string, err error) {
 }
 
 // Get all information about a user.
-func (db Database) GetUser(uid playlist.UserID) (user *playlist.User, err error) {
+func (db *Database) GetUser(uid playlist.UserID) (user *playlist.User, err error) {
     name, err := db.GetUserInfo(uid)
     if err != nil {
         return nil, err

@@ -6,8 +6,8 @@ import (
 )
 
 // Gets the entries in a playlist.
-func (db Database) GetPlaylistEntries(pid playlist.PlaylistID) (entries []*playlist.Entry, err error) {
-    rows, err := db.conn.Query("SELECT eid, yt_id, title, artist, album, duration FROM mix_playlist_entry WHERE pid = $1 ORDER BY index", pid)
+func (db *Database) GetPlaylistEntries(pid playlist.PlaylistID) (entries []*playlist.Entry, err error) {
+    rows, err := db.getQueryable().Query("SELECT eid, yt_id, title, artist, album, duration FROM mix_playlist_entry WHERE pid = $1 ORDER BY index", pid)
     if err != nil {
         return nil, err
     }
@@ -42,12 +42,16 @@ func (db Database) GetPlaylistEntries(pid playlist.PlaylistID) (entries []*playl
     return entries, nil
 }
 
-func (db Database) CreatePlaylistEntry(tx debugWrappedTx, index int, pid playlist.PlaylistID, entry *playlist.Entry) (newEid playlist.EntryID, err error) {
+func (db *Database) CreatePlaylistEntry(index int, pid playlist.PlaylistID, entry *playlist.Entry) (newEid playlist.EntryID, err error) {
+    if db.tx.tx == nil {
+        return 0, wrapError(1, NotInTransactionError)
+    }
+    
     duration := int(entry.Duration / time.Second)
-    row := tx.QueryRow("insert into mix_playlist_entry (pid, index, yt_id, title, artist, album, duration) values ($1, $2, $3, $4, $5, $6, $7) returning eid", pid, index, entry.Ytid, entry.Title, entry.Artist, entry.Album, duration)
+    row := db.tx.QueryRow("insert into mix_playlist_entry (pid, index, yt_id, title, artist, album, duration) values ($1, $2, $3, $4, $5, $6, $7) returning eid", pid, index, entry.Ytid, entry.Title, entry.Artist, entry.Album, duration)
     err = row.Scan(&newEid)
     if err != nil {
-        tx.Rollback()
+        db.RollbackTx()
         return 0, err
     }
     return newEid, nil

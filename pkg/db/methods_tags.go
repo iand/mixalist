@@ -5,8 +5,8 @@ import (
 )
 
 // Get the tags associated with a playlist.
-func (db Database) GetPlaylistTags(pid playlist.PlaylistID) (tags []string, err error) {
-    rows, err := db.conn.Query("SELECT tag FROM mix_playlist_tag WHERE pid = $1", pid)
+func (db *Database) GetPlaylistTags(pid playlist.PlaylistID) (tags []string, err error) {
+    rows, err := db.getQueryable().Query("SELECT tag FROM mix_playlist_tag WHERE pid = $1", pid)
     if err != nil {
         return nil, err
     }
@@ -28,10 +28,14 @@ func (db Database) GetPlaylistTags(pid playlist.PlaylistID) (tags []string, err 
     return tags, nil
 }
 
-func (db Database) AddPlaylistTags(tx debugWrappedTx, pid playlist.PlaylistID, tags ...string) (err error) {
+func (db *Database) AddPlaylistTags(pid playlist.PlaylistID, tags ...string) (err error) {
+    if db.tx.tx == nil {
+        return wrapError(1, NotInTransactionError)
+    }
+    
     existingTags, err := db.GetPlaylistTags(pid)
     if err != nil {
-        tx.Rollback()
+        db.RollbackTx()
         return err
     }
     
@@ -43,9 +47,9 @@ func (db Database) AddPlaylistTags(tx debugWrappedTx, pid playlist.PlaylistID, t
             }
         }
         
-        _, err = db.conn.Exec("INSERT INTO mix_playlist_tag VALUES ($1, $2)", pid, tag)
+        _, err = db.tx.Exec("INSERT INTO mix_playlist_tag VALUES ($1, $2)", pid, tag)
         if err != nil {
-            tx.Rollback()
+            db.RollbackTx()
             return err
         }
     }
