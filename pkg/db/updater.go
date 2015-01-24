@@ -1,5 +1,11 @@
 package db
 
+import (
+    "fmt"
+    "database/sql"
+    "github.com/lib/pq"
+)
+
 type DatabaseVersion uint
 
 type DatabaseUpdate struct {
@@ -67,14 +73,22 @@ func (db Database) doUpdate(update *DatabaseUpdate) (err error) {
 func (db Database) GetVersion() (v DatabaseVersion, err error) {
     err = db.conn.QueryRow("SELECT version FROM version").Scan(&v)
     if err != nil {
-        isNTE := isNonexistentTableError(err)
-        if isNTE {
+        if isNonexistentTableError(err) {
             // version table does not exist -> database is empty
-            err = db.conn.Exec("CREATE TABLE version (version integer)")
+            _, err = db.conn.Exec("CREATE TABLE version (version integer)")
             if err != nil {
                 return 0, err
             }
-            err = db.conn.Exec("INSERT INTO version VALUES (?)", Latest)
+            _, err = db.conn.Exec("INSERT INTO version VALUES (?)", Latest)
+            if err != nil {
+                return 0, err
+            }
+            return Latest, nil
+        } else if err == sql.ErrNoRows {
+            // version table exists and is empty -> assume database empty
+            // This shouldn't happen unless the database is corrupted, in which
+            // case corrupting it further is not that much of an issue.
+            _, err = db.conn.Exec("INSERT INTO version VALUES (?)", Latest)
             if err != nil {
                 return 0, err
             }
@@ -89,7 +103,10 @@ func (db Database) GetVersion() (v DatabaseVersion, err error) {
     return v, nil
 }
 
+// http://www.postgresql.org/docs/9.3/static/errcodes-appendix.html
+const invalidTableErrorCode pq.ErrorCode = "42P01"
+
 func isNonexistentTableError(err error) bool {
-    mysqlError, isMysqlError := err.(*mysql.MySQLError)
-    return isMysqlError && mysqlError.Number == 1146
+    perr, ok := err.(*pq.Error)
+    return ok && perr.Code == invalidTableErrorCode
 }
