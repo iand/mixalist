@@ -169,3 +169,42 @@ func (db *Database) CreatePlaylist(p *playlist.Playlist) (err error) {
     
     return nil
 }
+
+func (db *Database) SearchPlaylists(pageSize, pageNum int, keywords ...string) (pids []playlist.PlaylistID, err error) {
+    start := pageNum * pageSize
+    params := []interface{}{start, pageSize}
+    query := "select pid from mix_playlist"
+    
+    for i, keyword := range keywords {
+        params = append(params, "%" + patternEscape(keyword) + "%")
+        if i > 0 {
+            query += " and "
+        } else {
+            query += " where "
+        }
+        query += fmt.Sprintf("search_text like $%d", len(params))
+    }
+    
+    query += " limit $2 offset $1"
+    rows, err := db.getQueryable().Query(query, params...)
+    if err != nil {
+        return nil, err
+    }
+    
+    for rows.Next() {
+        var pid playlist.PlaylistID
+        err = rows.Scan(&pid)
+        if err != nil {
+            return nil, err
+        }
+        pids = append(pids, pid)
+    }
+    
+    err = rows.Err()
+    if err != nil {
+        return nil, err
+    }
+    
+    return pids, nil
+}
+
