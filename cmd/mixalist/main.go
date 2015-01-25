@@ -5,6 +5,7 @@ import (
 	"github.com/GeertJohan/go.rice"
 	"github.com/gorilla/mux"
 	"github.com/iand/mixalist/pkg/db"
+	"github.com/iand/mixalist/pkg/search"
 	"net/http"
 	"os"
 )
@@ -19,6 +20,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Could not connect to database: %v", err)
 		os.Exit(1)
 	}
+	search.DefaultDatabase = database
 
 	router := mux.NewRouter()
 	router.PathPrefix("/css/").Handler(http.StripPrefix("/css/", http.FileServer(rice.MustFindBox("css").HTTPBox())))

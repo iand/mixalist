@@ -5,18 +5,23 @@ import (
 	"strings"
 	"time"
 
+	"github.com/iand/mixalist/pkg/db"
 	"github.com/iand/youtube"
 )
 
 const (
-	SourceYouTube = "yt"
+	SourceYouTube  = "youtube"
+	SourceMixalist = "mixalist"
 )
+
+var DefaultDatabase *db.Database
 
 type SearchFunc func(query string, results chan Result, quit chan bool, done chan bool)
 
 var (
 	searchers = []SearchFunc{
 		searchYouTube,
+		searchEntries,
 	}
 )
 
@@ -106,4 +111,28 @@ func searchYouTube(query string, results chan Result, quit chan bool, done chan 
 	}
 
 	done <- true
+}
+
+func searchEntries(query string, results chan Result, quit chan bool, done chan bool) {
+	words := strings.Split(query, " ")
+	entries, err := DefaultDatabase.SearchEntries(10, 0, words...)
+	if err != nil {
+		done <- true
+	}
+
+	for _, e := range entries {
+		result := Result{
+			Title:    e.Title,
+			Source:   SourceMixalist,
+			SourceID: e.Ytid,
+		}
+
+		select {
+		case results <- result:
+		case <-quit:
+			return
+		}
+	}
+	done <- true
+
 }
