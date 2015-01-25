@@ -136,8 +136,8 @@ func searchEntries(query string, results chan Result, quit chan bool, done chan 
 	for _, e := range entries {
 		result := Result{
 			Title:    e.Title,
-			Source:   SourceMixalist,
-			SourceID: e.Ytid,
+			Source:   e.SrcName,
+			SourceID: e.SrcID,
 		}
 
 		select {
