@@ -19,5 +19,16 @@ func (db *Database) GetPlaylistStars(pid playlist.PlaylistID) (stars int, err er
 }
 
 func (db *Database) ToggleStar(uid playlist.UserID, pid playlist.PlaylistID) (bool, error) {
+
+	// row := db.getQueryable().QueryRow("select count(*) from mix_playlist_star where pid = $1", pid)
+	// err = row.Scan(&stars)
+	// if err != nil {
+	// 	if isNoRowsError(err) {
+	// 		err = InvalidPlaylistError
+	// 	}
+	// 	return 0, err
+	// }
+
 	return false, nil
+
 }
