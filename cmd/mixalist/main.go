@@ -8,11 +8,13 @@ import (
 	"github.com/iand/mixalist/pkg/search"
 	"net/http"
 	"os"
+	"runtime"
 )
 
 var database *db.Database
 
 func main() {
+	runtime.GOMAXPROCS(runtime.NumCPU())
 	var err error
 	database, err = db.Connect(true)
 

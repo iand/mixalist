@@ -101,7 +101,7 @@
         </div>
         {{end}}
       </div>
-      
+
       <div class="row">
         <div class="input-group">
           <input type="text" class="form-control" placeholder="Name of Playlist" aria-describedby="basic-addon2"><button type="button" class="btn btn-default">Save</button>
@@ -158,7 +158,7 @@
           $.each( data['results'], function( index, val ) {
             var row = $("<div class='row searchrow panel'></div>").appendTo(container);
             $("<div class='col-md-3'><img class='media-object search-preview' src='" +val['previewurl']+"' width='128'></div>").appendTo(row);
-            $("<div class='col-md-6'><h4 class='media-heading'>" + val['title'] + "</h4></div>").appendTo(row);
+            $("<div class='col-md-6'><h4 class='media-heading'>" + val['title'] + " (" + val['source'] + ")</h4></div>").appendTo(row);
             var buttonCol = $("<div class='col-md-3'></div>").appendTo(row);
             var button = $("<button type='button' class='btn btn-success pull-right'><span class='glyphicon glyphicon-plus-sign' aria-hidden='true'></span> Add</button>").appendTo(buttonCol);
             button.click(function(event) {
