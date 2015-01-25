@@ -134,7 +134,7 @@ func main() {
 				log.Printf("failed to begin transaction: %v", err)
 				os.Exit(1)
 			}
-			pid, err := database.CreatePlaylist(p)
+			err := database.CreatePlaylist(p)
 			if err != nil {
 				log.Printf("failed to create playlist %s: %v", p.Title, err)
 				os.Exit(1)
@@ -144,7 +144,7 @@ func main() {
 				log.Printf("failed to commit transaction: %v", err)
 				os.Exit(1)
 			}
-			log.Printf("created playlist %s with pid %d", p.Title, pid)
+			log.Printf("created playlist %s with pid %d", p.Title, p.Pid)
 			continue
 		}
 		if err != nil {

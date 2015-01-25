@@ -131,7 +131,7 @@ func (db *Database) CreatePlaylistRecord(title string, ownerUid playlist.UserID,
 		parentPidNullable = nil
 	}
 
-	row := db.tx.QueryRow("insert into mix_playlist (title, owner_uid, created, search_text, parent_pid) values ($1, $2, timestamp 'now', $3, $4) returning id", title, ownerUid, searchText, parentPidNullable)
+	row := db.tx.QueryRow("insert into mix_playlist (title, owner_uid, created, search_text, parent_pid) values ($1, $2, timestamp 'now', $3, $4) returning pid", title, ownerUid, searchText, parentPidNullable)
 	err = row.Scan(&newPid)
 	if err != nil {
 		db.RollbackTx()
