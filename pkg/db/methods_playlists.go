@@ -111,12 +111,12 @@ func (db *Database) GetPlaylist(pid playlist.PlaylistID) (p *playlist.Playlist, 
 	}
 
 	return &playlist.Playlist{
-		Pid:     pid,
-		Title:   title,
-		Owner:   owner,
-		Stars:   stars,
-		Tags:    tags,
-		Entries: entries,
+		Pid:       pid,
+		Title:     title,
+		Owner:     owner,
+		Stars:     stars,
+		Tags:      tags,
+		Entries:   entries,
 		ParentPid: parentPid,
 	}, nil
 }
