@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/GeertJohan/go.rice"
+	"github.com/iand/mixalist/pkg/db"
 	"github.com/iand/mixalist/pkg/playlist"
 	"html/template"
 	"net/http"
@@ -18,7 +19,15 @@ func remixplaylist(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pl, err := database.GetPlaylist(playlist.PlaylistID(pid))
+	d, err := db.Connect(true)
+
+	if err != nil {
+		msg := fmt.Sprintf("Could not connect to database: %v", err)
+		http.Error(w, msg, http.StatusInternalServerError)
+		return
+	}
+
+	pl, err := d.GetPlaylist(playlist.PlaylistID(pid))
 	if err != nil {
 		msg := fmt.Sprintf("Could not get playlist: %v", err)
 		http.Error(w, msg, http.StatusInternalServerError)
@@ -27,7 +36,7 @@ func remixplaylist(w http.ResponseWriter, r *http.Request) {
 
 	box, _ := rice.FindBox("templates")
 
-	templateData, _ := box.String("remixplaylist.html")
+	templateData, _ := box.String("mixplaylist.html")
 	t, _ := template.New("remixplaylist.html").Parse(templateData)
 
 	data := map[string]interface{}{
