@@ -74,14 +74,14 @@ var Updates = []*DatabaseUpdate{
 	},
 	&DatabaseUpdate{
 		From: 7,
-		To: 8,
+		To:   8,
 		SQL: []string{
 			"alter table mix_playlist add column parent_pid integer references mix_playlist (pid)",
 		},
 	},
 	&DatabaseUpdate{
 		From: 8,
-		To: 9,
+		To:   9,
 		SQL: []string{
 			"alter table mix_playlist add column image_blob_id char(32)",
 			"update mix_playlist set image_blob_id = ''",
@@ -106,7 +106,7 @@ var LatestSchema = []Table{
 		created     timestamp,
 		search_text varchar,
 		parent_pid  integer references mix_playlist (pid),
-		image_blob_id char(32),
+		image_blob_id char(32)
 	)`},
 
 	Table{"mix_playlist_star", `create table mix_playlist_star (
@@ -131,6 +131,6 @@ var LatestSchema = []Table{
 		album       varchar(255),
 		duration    smallint,
 		search_text varchar,
-		image_blob_id char(32),
+		image_blob_id char(32)
 	)`},
 }
