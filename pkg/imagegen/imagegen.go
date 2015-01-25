@@ -51,7 +51,7 @@ func GeneratePlaylistImage(entryBlobIDs []blobstore.ID) (playlistBlobID blobstor
 	
 	c := &Compositer{
 		DestWidth: 100,
-		TilesPerSide: 3,
+		TilesPerSide: 2,
 		LugDepthRatio: 0.25,
 		LugWidthRatio: 0.33,
 	}
