@@ -7,7 +7,10 @@
   <title>mixalist</title>
 
   <!-- Bootstrap -->
-  <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+  <!--<link href="//maxcdn.bootstrapcdn.com/bootswatch/3.3.1/cerulean/bootstrap.min.css" rel="stylesheet">-->
+  <link href="/css/lavish-bootstrap.css" rel="stylesheet">
+  <link href="/css/stylesheet.css" rel="stylesheet">
 
   <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
   <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -38,76 +41,120 @@
 
   </head>
   <body>
+  <nav class="navbar navbar-inverse">
+        <div class="container-fluid">
+          <!-- Brand and toggle get grouped for better mobile display -->
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/"><img id="logo" src="images/mixalistlogo-scaled.png" alt="..."></a>
+          </div>
+
+          <!-- Collect the nav links, forms, and other content for toggling -->
+          <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <form class="navbar-form navbar-left" role="search">
+              <div class="form-group">
+                <input type="text" class="form-control" placeholder="...">
+              </div>
+              <button type="submit" class="btn btn-default">Find Playlist</button>
+            </form>
+            <ul class="nav navbar-nav navbar-right">
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"> {{.username}} <span class="caret"></span></a>
+                <ul class="dropdown-menu" role="menu">
+                  <li><a href="#">.</a></li>
+                  <li><a href="#">.</a></li>
+                  <li><a href="#">.
+                    <li><a href="#">.</a></li>
+                    <li class="divider"></li>
+                    <li><a href="#">.</a></li>
+                  </ul>
+                </li>
+              </ul>
+            </div><!-- /.navbar-collapse -->
+          </div><!-- /.container-fluid -->
+        </nav>
+
     <div class="container">
 
       <div class="row">
-        <div class="col-md-1">
-        </div>
-        <div class="col-md-11">
-          <h2> Remixing {{.playlist.Title}} </h2>
-        </div>
+      <div class="panel panel-default">
+            <div class="panel-body">
 
-      </div>
-
-      <div class="row">
-        <div class="col-md-1">
-        </div>
-
-        <div class="col-md-2">
-          <div class="media">
-            <div class="media-left media-middle">
-              <a href="#">
-                <img class="media-object" src="images/unknown.jpg" alt="..." height="96" width="96" >
-              </a>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-9">
-          <button class="btn btn-primary " type="button" data-toggle="modal" data-target="#search" >Add Music</button>
-        </div>
-      </div>
-
-      <div id="entries">
-        {{range .playlist.Entries}}
-        <div class="row playlist-entry">
-          <input class="ytid" type="hidden" value="{{.Ytid}}"/>
-          <div class="col-md-1">
-            <p class=" pull-right">
-              <button type="button" class="btn btn-info btn-xs"><span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span></button>
-              <button type="button" class="btn btn-info btn-xs"><span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span></button>
-            </p>
-            <p class=" pull-right">
-              <button type="button" class="btn btn-danger btn-xs" onclick="removeRow(this);"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>
-            </p>
-          </div>
-
-          <div class="col-md-11">
-            <div class="media">
-              <div class="media-left media-middle">
-                <a href="#">
-                  <img class="media-object" src="images/sample2.jpg" alt="..." height="96" width="96" >
-                </a>
+              <div class="col-md-1">
+              </div>
+              <div class="col-md-11">
+                <h2> Remixing {{.playlist.Title}} </h2>
               </div>
 
-              <div class="media-body">
-                <h3> <input class="title" type="text" size="30" placeholder="Title" value="{{.Title}}"/> </h3>
-                <h4> <input class="artist" type="text" size="30" placeholder="Artist" value="{{.Artist}}"/> </h4>
+            </div>
+
+            <div class="row">
+              <div class="col-md-1">
+              </div>
+
+              <div class="col-md-2">
+                <div class="media">
+                  <div class="media-left media-middle">
+                    <a href="#">
+                      <img class="media-object" src="images/unknown.jpg" alt="..." height="96" width="96" >
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-9">
+                <button class="btn btn-primary " type="button" data-toggle="modal" data-target="#search" >Add Music</button>
               </div>
             </div>
 
+            <div id="entries">
+              {{range .playlist.Entries}}
+              <div class="row playlist-entry">
+                <input class="ytid" type="hidden" value="{{.Ytid}}"/>
+                <div class="col-md-1">
+                  <p class=" pull-right">
+                    <button type="button" class="btn btn-info btn-xs"><span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span></button>
+                    <button type="button" class="btn btn-info btn-xs"><span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span></button>
+                  </p>
+                  <p class=" pull-right">
+                    <button type="button" class="btn btn-danger btn-xs" onclick="removeRow(this);"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>
+                  </p>
+                </div>
+
+                <div class="col-md-11">
+                  <div class="media">
+                    <div class="media-left media-middle">
+                      <a href="#">
+                        <img class="media-object" src="images/sample2.jpg" alt="..." height="96" width="96" >
+                      </a>
+                    </div>
+
+                    <div class="media-body">
+                      <h3> <input class="title" type="text" size="30" placeholder="Title" value="{{.Title}}"/> </h3>
+                      <h4> <input class="artist" type="text" size="30" placeholder="Artist" value="{{.Artist}}"/> </h4>
+                    </div>
+                  </div>
+
+                </div>
+
+              </div>
+              {{end}}
+            </div>
+
+            <div class="row">
+              <div class="input-group">
+                <input type="text" class="form-control" placeholder="Name of Playlist" aria-describedby="basic-addon2"><button type="button" class="btn btn-default">Save</button>
+              </div>
+            </div>
           </div>
-
-        </div>
-        {{end}}
-      </div>
-
-      <div class="row">
-        <div class="input-group">
-          <input type="text" class="form-control" placeholder="Name of Playlist" aria-describedby="basic-addon2"><button type="button" class="btn btn-default">Save</button>
-        </div>
-      </div>
-    </div>
+          </div>
+          </div>
+          
 
     <div class="modal" id="search" tabindex="-1" role="dialog" aria-labelledby="searchtitle" aria-hidden="true">
       <div class="modal-dialog">

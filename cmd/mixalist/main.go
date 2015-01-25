@@ -47,6 +47,7 @@ func main() {
 	router.Path("/s").HandlerFunc(searchHandler)
 	router.Path("/p/{pid:[0-9]+}").HandlerFunc(viewplaylist)
 	router.Path("/r").HandlerFunc(remixplaylist)
+	router.Path("/about").HandlerFunc(viewabout)
 	router.Path("/").HandlerFunc(viewfrontpage)
 
 	server := &http.Server{

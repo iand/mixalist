@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>mixalist</title>
+
+  <!-- Bootstrap -->
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <!--<link href="//maxcdn.bootstrapcdn.com/bootswatch/3.3.1/cerulean/bootstrap.min.css" rel="stylesheet">-->
+  <link href="/css/lavish-bootstrap.css" rel="stylesheet">
+  <link href="/css/stylesheet.css" rel="stylesheet">
+
+  <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+      <![endif]-->
+    </head>
+    <body>
+
+      <nav class="navbar navbar-inverse">
+        <div class="container-fluid">
+          <!-- Brand and toggle get grouped for better mobile display -->
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/"><img id="logo" src="images/mixalistlogo-scaled.png" alt="..."></a>
+          </div>
+
+          <!-- Collect the nav links, forms, and other content for toggling -->
+          <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <form class="navbar-form navbar-left" role="search">
+              <div class="form-group">
+                <input type="text" class="form-control" placeholder="...">
+              </div>
+              <button type="submit" class="btn btn-default">Find Playlist</button>
+            </form>
+            <ul class="nav navbar-nav navbar-right">
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"> {{.username}} <span class="caret"></span></a>
+                <ul class="dropdown-menu" role="menu">
+                  <li><a href="#">.</a></li>
+                  <li><a href="#">.</a></li>
+                  <li><a href="#">.
+                    <li><a href="#">.</a></li>
+                    <li class="divider"></li>
+                    <li><a href="#">.</a></li>
+                  </ul>
+                </li>
+              </ul>
+            </div><!-- /.navbar-collapse -->
+          </div><!-- /.container-fluid -->
+        </nav>
+
+        <div class="container">
+          <div class="row">
+          </div>
+          <div class="panel panel-default">
+            <div class="panel-body">
+              <div class="row">
+            
+
+                 <div class="caption">
+                  <h4 class="text-centre"><a href ="/p/{{.Pid}}">About us</a></h4>
+                  <p>
+                    <em>Mixalist lets you find, rate and create playlists of your favourite music. We created it on 24-25th of January as part of the <a href="http://gophergala.com">Gopher Gala</a>. Gopher Gala is a 48hr coding marathon for projects using the <a href="http://golang.org">Go programming language.</a></em>
+
+                  </p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="container">
+          <div class="row">
+          </div>
+          <div class="row">
+            <div class="col-sm-6 col-md-3">
+              <div class="thumbnail">
+               <a href="https://twitter.com/iand?"><img src="http://0.gravatar.com/avatar/09dc91c92d018a094d7ce79b19034252?s=196" alt="..." height="196" width="196" class="playlist-image"></a>
+
+               <div class="caption">
+                <h4><a href ="/p/{{.Pid}}">Ian Davis</a></h4>
+                <p>
+                  <em>Ye Olde Wise One</em>
+                  <br>I had the playlist idea for three years before I actually got around to doing anything.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6 col-md-3">
+            <div class="thumbnail">
+             <a href="https://twitter.com/kierdavis?"><img src="http://0.gravatar.com/avatar/807534bb09fa22975c906a668b0dcb6f?s=196" alt="..." height="196" width="196" class="playlist-image"></a>
+
+             <div class="caption">
+              <h4><a href ="/p/{{.Pid}}">Kier Davis</a></h4>
+              <p>
+                <em>Hardcore Nerd</em>
+                <br>I wrangled the database and shuffled images causing waves of merge conflicts along the way.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-6 col-md-3">
+          <div class="thumbnail">
+          <a href="https://twitter.com/archinot?"><img src="http://0.gravatar.com/avatar/1e6da5e09c9a4152c8c0e23af800f7de?s=197" alt="..." height="196" width="196" class="playlist-image"></a>
+
+           <div class="caption">
+            <h4><a href ="/p/{{.Pid}}">Freya Davis</a></h4>
+            <p>
+              <em>Obsessive Coder</em>
+              <br>I wrote code, designed the site, created playlists and did everything nobody else wanted to do.
+            </p>
+          </div>
+        </div>
+      </div>
+              <div class="col-sm-6 col-md-3">
+          <div class="thumbnail">
+          <a href="https://twitter.com/stephdavis?"><img src="http://0.gravatar.com/avatar/60ea92a77c0315dca4f0461d1cc3323f?s=196" alt="..." height="196" width="196" class="playlist-image"></a>
+
+           <div class="caption">
+            <h4><a href ="/p/{{.Pid}}">Steph Davis</a></h4>
+            <p>
+              <em>Operational Support Engineer</em>
+              <br> Tended to the team's nutritional needs in between heavy sessions of Diablo 3.
+            </p>
+          </div>
+        </div>
+      </div>
+
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.min.js"></script>
+  </body>
+  </html>

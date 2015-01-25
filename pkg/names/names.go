@@ -102,7 +102,7 @@ var nouns = []string{
 	"butterfly",
 	"calf",
 	"camel",
-	"capybary",
+	"capybara",
 	"caribou",
 	"cat",
 	"caterpilla",
@@ -299,5 +299,5 @@ var nouns = []string{
 	"bee",
 	"sloth",
 	"axolotl",
-	"tarsier", "aardvark",
+	"tarsier",
 }
