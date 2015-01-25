@@ -3,6 +3,7 @@ package playlist
 import (
 	"fmt"
 	"github.com/iand/mixalist/pkg/blobstore"
+	"math/rand"
 	"strings"
 	"time"
 )
@@ -44,45 +45,51 @@ type artistCount struct {
 }
 
 func (p *Playlist) Featuring() string {
+
 	switch len(p.Entries) {
 	case 0:
 		return "No songs :("
 	case 1:
-		return fmt.Sprintf("Featuring %s", p.Entries[0].Artist)
+		if strings.TrimSpace(p.Entries[0].Artist) != "" {
+			return fmt.Sprintf("Featuring %s", p.Entries[0].Artist)
+		}
+		if strings.TrimSpace(p.Entries[0].Title) != "" {
+			return fmt.Sprintf("Featuring %s", p.Entries[0].Title)
+		}
+		return "One song"
 	}
 
-	artists := map[string]int{}
-	for _, e := range p.Entries {
-		artists[strings.TrimSpace(e.Artist)]++
-	}
+	artists := []string{}
+	perm := rand.Perm(len(p.Entries))
 
-	artistCounts := []artistCount{}
-	for artist, count := range artists {
-		if len(artistCounts) < 3 {
-			artistCounts = append(artistCounts, artistCount{
-				artist: artist,
-				count:  count,
-			})
+outer:
+	for _, i := range perm {
+		if len(artists) > 2 {
+			break
+		}
+
+		artist := strings.TrimSpace(p.Entries[i].Artist)
+		if artist == "" {
 			continue
 		}
-		for i := 0; i < len(artistCounts); i++ {
-			if artistCounts[i].count < count {
-				artistCounts[i].artist = artist
-				artistCounts[i].count = count
-				continue
+
+		for _, existing := range artists {
+			if strings.EqualFold(strings.TrimSpace(existing), artist) {
+				continue outer
 			}
 		}
+		artists = append(artists, artist)
 	}
 
-	switch len(artistCounts) {
+	switch len(artists) {
 	case 1:
-		return fmt.Sprintf("Featuring %s", artistCounts[0].artist)
+		return fmt.Sprintf("Featuring %s", artists[0])
 	case 2:
-		return fmt.Sprintf("Featuring %s and %s", artistCounts[0].artist, artistCounts[1].artist)
-	default:
-		return fmt.Sprintf("Featuring %s, %s and %s", artistCounts[0].artist, artistCounts[1].artist, artistCounts[2].artist)
+		return fmt.Sprintf("Featuring %s and %s", artists[0], artists[1])
+	case 3:
+		return fmt.Sprintf("Featuring %s, %s and %s", artists[0], artists[1], artists[2])
 	}
 
-	return "No songs :("
+	return fmt.Sprintf("%d songs", len(p.Entries))
 
 }
