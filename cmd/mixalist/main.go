@@ -50,7 +50,7 @@ func main() {
 	router.Path("/p/{pid:[0-9]+}").HandlerFunc(viewplaylist)
 	router.Path("/r").HandlerFunc(remixplaylist)
 	router.Path("/about").HandlerFunc(viewabout)
-	router.Path("/star").Methods("POST").HandlerFunc(togglestar)
+	router.Path("/api/star").Methods("POST").HandlerFunc(togglestar)
 	router.Path("/").HandlerFunc(viewfrontpage)
 
 	server := &http.Server{
