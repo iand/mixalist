@@ -2,13 +2,14 @@ package db
 
 import (
 	"fmt"
+	"github.com/iand/mixalist/pkg/blobstore"
 	"github.com/iand/mixalist/pkg/playlist"
 	"time"
 )
 
 // Gets the entries in a playlist.
 func (db *Database) GetPlaylistEntries(pid playlist.PlaylistID) (entries []*playlist.Entry, err error) {
-	rows, err := db.getQueryable().Query("select eid, title, artist, album, duration, src_name, src_id from mix_playlist_entry where pid = $1 order by index", pid)
+	rows, err := db.getQueryable().Query("select eid, title, artist, album, duration, src_name, src_id, coalesce(image_blob_id, '') from mix_playlist_entry where pid = $1 order by index", pid)
 	if err != nil {
 		return nil, err
 	}
@@ -17,8 +18,9 @@ func (db *Database) GetPlaylistEntries(pid playlist.PlaylistID) (entries []*play
 		var eid playlist.EntryID
 		var title, artist, album, srcName, srcID string
 		var duration int
+		var imageBlobID blobstore.ID
 
-		err = rows.Scan(&eid, &title, &artist, &album, &duration, &srcName, &srcID)
+		err = rows.Scan(&eid, &title, &artist, &album, &duration, &srcName, &srcID, &imageBlobID)
 		if err != nil {
 			return nil, err
 		}
@@ -31,6 +33,7 @@ func (db *Database) GetPlaylistEntries(pid playlist.PlaylistID) (entries []*play
 			SrcName:  srcName,
 			SrcID:    srcID,
 			Duration: time.Duration(duration) * time.Second,
+			ImageBlobID: imageBlobID,
 		}
 
 		entries = append(entries, entry)
@@ -50,7 +53,10 @@ func (db *Database) CreatePlaylistEntry(index int, pid playlist.PlaylistID, entr
 	}
 
 	duration := int(entry.Duration / time.Second)
-	row := db.tx.QueryRow("insert into mix_playlist_entry (pid, index, title, artist, album, duration, search_text, src_name, src_id) values ($1, $2, $3, $4, $5, $6, lower($7 || ' ' || $8 || ' ' || $9), $10, $11) returning eid", pid, index, entry.Title, entry.Artist, entry.Album, duration, entry.Title, entry.Artist, entry.Album, entry.SrcName, entry.SrcID)
+	row := db.tx.QueryRow("insert into mix_playlist_entry (pid, index, title, artist, album, duration, search_text, src_name, src_id, image_blob_id) " +
+		"values ($1, $2, $3, $4, $5, $6, lower($7 || ' ' || $8 || ' ' || $9), $10, $11, $12) returning eid",
+		pid, index, entry.Title, entry.Artist, entry.Album, duration, entry.Title, entry.Artist, entry.Album, entry.SrcName, entry.SrcID, entry.ImageBlobID)
+	
 	err = row.Scan(&newEid)
 	if err != nil {
 		db.RollbackTx()
@@ -62,7 +68,7 @@ func (db *Database) CreatePlaylistEntry(index int, pid playlist.PlaylistID, entr
 func (db *Database) SearchEntries(pageSize, pageNum int, keywords ...string) (entries []*playlist.Entry, err error) {
 	start := pageNum * pageSize
 	params := []interface{}{start, pageSize}
-	query := "select eid, title, artist, album, duration, src_name, src_id from mix_playlist_entry"
+	query := "select eid, title, artist, album, duration, src_name, src_id, coalesce(image_blob_id, '') from mix_playlist_entry"
 
 	for i, keyword := range keywords {
 		params = append(params, "%"+patternEscape(keyword)+"%")
@@ -83,7 +89,7 @@ func (db *Database) SearchEntries(pageSize, pageNum int, keywords ...string) (en
 	for rows.Next() {
 		var duration int
 		entry := new(playlist.Entry)
-		err = rows.Scan(&entry.Eid, &entry.Title, &entry.Artist, &entry.Album, &duration, &entry.SrcName, &entry.SrcID)
+		err = rows.Scan(&entry.Eid, &entry.Title, &entry.Artist, &entry.Album, &duration, &entry.SrcName, &entry.SrcID, &entry.ImageBlobID)
 		if err != nil {
 			return nil, err
 		}
