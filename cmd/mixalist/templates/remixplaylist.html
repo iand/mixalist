@@ -35,7 +35,7 @@
         #search .searchrow {
           padding-top: 5px;
         }
-        
+
         .modal-dialog {
           left: auto;
         }
@@ -160,7 +160,7 @@
           </div>
           </div>
           </div>
-          
+
 
     <div class="modal" id="search" tabindex="-1" role="dialog" aria-labelledby="searchtitle" aria-hidden="true">
       <div class="modal-dialog">
@@ -262,12 +262,12 @@
           $("#searchbox").val("");
           $("#searchresults").html("");
         });
-        
+
         $("#save").click(function(event) {
           event.preventDefault();
-          
+
           var entries = [];
-          
+
           $(".playlist-entry").each(function() {
             entries.push({
               title: $(this).find(".title").val(),
@@ -279,18 +279,18 @@
               imageUrl: $(this).find(".thumb").attr("src"),
             });
           });
-          
+
           var playlist = {
             title: $("#playlist-title").val(),
             tags: [],
             entries: entries,
             parentPid: {{.playlist.Pid}},
           };
-          
+
           var reqData = {
             playlist: playlist,
           };
-          
+
           $.ajax({
             url: "/api/remix",
             type: "post",
@@ -305,7 +305,7 @@
             },
           });
         });
-        
+
         // make pressing enter in the search box perform a search
         $("#searchbox").keydown(function(event) {
           if (event.keyCode == 13) {
