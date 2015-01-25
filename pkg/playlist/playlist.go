@@ -1,6 +1,7 @@
 package playlist
 
 import (
+	"github.com/iand/mixalist/pkg/blobstore"
 	"time"
 )
 
@@ -16,6 +17,7 @@ type Playlist struct {
 	Tags      []string
 	Entries   []*Entry
 	ParentPid PlaylistID
+	ImageBlobID blobstore.ID
 }
 
 type Entry struct {
@@ -26,6 +28,7 @@ type Entry struct {
 	Duration time.Duration
 	SrcName  string	// "youtube" or "soundcloud"
 	SrcID    string
+	ImageBlobID blobstore.ID
 }
 
 type User struct {
