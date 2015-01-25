@@ -70,7 +70,7 @@ func (c *Compositer) Composite(imgs []image.Image) image.Image {
 				minDimension = imageHeight
 			}
 
-			cropSize := minDimension / 4
+			cropSize := minDimension / 3
 
 			croppedImg := salience.Crop(img, cropSize, cropSize)
 			scaledImg := resize.Resize(uint(tileWidth), uint(tileHeight), croppedImg, resize.Bilinear)
