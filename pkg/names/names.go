@@ -1,28 +1,13 @@
 package names
 
 import (
-	"strconv"
+	"math/rand"
 )
 
-func NewName(id string) (string, error) {
-	// id will be a long hex string like a2d613-abc123-ff3135-ea3897ed
-
-	part1 := id[0:2]
-	num1, err := strconv.ParseInt(part1, 16, 64)
-	if err != nil {
-		return "", err
-	}
-	word1 := adjectives[int(num1)%len(adjectives)]
-
-	part2 := id[2:4]
-	num2, err := strconv.ParseInt(part2, 16, 64)
-	if err != nil {
-		return "", err
-	}
-	word2 := nouns[int(num2)%len(nouns)]
-
-	username := word1 + "_" + word2
-	return username, nil
+func NewName() string {
+	word1 := adjectives[rand.Intn(len(adjectives))]
+	word2 := nouns[rand.Intn(len(nouns))]
+	return word1 + "_" + word2
 }
 
 var adjectives = []string{

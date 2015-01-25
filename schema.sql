@@ -1,4 +1,4 @@
-# Schema version 9
+# Schema version 10
 
 create table mix_version (
     version     integer,                                # current database version
@@ -37,13 +37,14 @@ create table mix_playlist_entry (
     eid         bigserial primary key,                  # entry ID
     pid         integer references mix_playlist (pid),  # ID of playlist this entry is in
     index       smallint,                               # index of entry within playlist (0-based)
-    yt_id       char(11),                               # 11-character YouTube video ID (https://www.youtube.com/watch?v=xxxxxxxxxxx)
     title       varchar(255),                           # track title (can be edited)
     artist      varchar(255),                           # track artist (can be edited)
     album       varchar(255),                           # track album (can be edited)
     duration    smallint,                               # duration of video in seconds
     search_text varchar,                                # concatenation of title, artist and album (for searching)
-    image_blob_id char(32)                              # blob ID of album art
+    image_blob_id char(32),                             # blob ID of album art
+    src_name    varchar,                                # name of source ("youtube", "soundcloud")
+    src_id      varchar                                 # identifier of video from source (e.g. youtube video ID)
 );
 
 
@@ -58,4 +59,5 @@ Schema version changelog:
     7: add mix_playlist.search_text column
     8: add mix_playlist.parent_pid column
     9: add mix_playlist.image_blob_id and mix_playlist_entry.image_blob_id columns
+    10: replace mix_playlist.yt_id with src_name and src_id columns
 */
