@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/GeertJohan/go.rice"
+	"github.com/iand/mixalist/pkg/blobstore"
 	"github.com/iand/mixalist/pkg/playlist"
 	"html/template"
 	"log"
@@ -59,6 +60,16 @@ func remixApiHandler(w http.ResponseWriter, r *http.Request) {
 	entries := make([]*playlist.Entry, len(reqData.Playlist.Entries))
 
 	for i, e := range reqData.Playlist.Entries {
+		imageBlobID := blobstore.ID(e.ImageBlobID)
+		if imageBlobID == "" {
+			// Download the image
+			imageBlobID, err = blobstore.DefaultStore.Download(e.ImageUrl)
+			if err != nil {
+				log.Printf("remixApiHandler: failed to download image from '%s': %s", e.ImageUrl, err.Error())
+				imageBlobID = ""
+			}
+		}
+		
 		entries[i] = &playlist.Entry{
 			Title:    e.Title,
 			Artist:   e.Artist,
@@ -66,6 +77,7 @@ func remixApiHandler(w http.ResponseWriter, r *http.Request) {
 			Duration: time.Duration(e.Duration) * time.Second,
 			SrcName:  e.SrcName,
 			SrcID:    e.SrcID,
+			ImageBlobID: imageBlobID,
 		}
 	}
 
@@ -128,7 +140,8 @@ type remixApiEntry struct {
 	Duration int    `json:"duration"`
 	SrcName  string `json:"srcName"`
 	SrcID    string `json:"srcID"`
-	ImageURL string `json:"imageURL"`
+	ImageUrl string `json:"imageUrl"`
+	ImageBlobID string `json:"imageBlobID"`
 }
 
 type remixApiResponseData struct {
