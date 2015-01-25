@@ -37,8 +37,8 @@ func (db *Database) CreateUser(name string) (uid playlist.UserID, err error) {
 	if db.tx.tx == nil {
 		return 0, wrapError(1, NotInTransactionError)
 	}
-	
-	row := db.tx.QueryRow("insert into user (name) values ($1) returrning uid", name)
+
+	row := db.tx.QueryRow("insert into mix_user (name) values ($1) returning uid", name)
 	err = row.Scan(&uid)
 	if err != nil {
 		return 0, err
