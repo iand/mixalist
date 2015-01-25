@@ -33,7 +33,10 @@ func remixplaylist(w http.ResponseWriter, r *http.Request) {
 	templateData, _ := box.String("remixplaylist.html")
 	t, _ := template.New("remixplaylist.html").Parse(templateData)
 
+	user := getUser(w, r)
 	data := map[string]interface{}{
+		"uid":      user.Uid,
+		"username": user.Name,
 
 		"playlist": pl,
 	}
@@ -50,53 +53,55 @@ func remixApiHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, msg, http.StatusBadRequest)
 		return
 	}
-	
+
+	user := getUser(w, r)
+
 	entries := make([]*playlist.Entry, len(reqData.Playlist.Entries))
-	
+
 	for i, e := range reqData.Playlist.Entries {
 		entries[i] = &playlist.Entry{
-			Title: e.Title,
-			Artist: e.Artist,
-			Album: e.Album,
+			Title:    e.Title,
+			Artist:   e.Artist,
+			Album:    e.Album,
 			Duration: time.Duration(e.Duration) * time.Second,
-			SrcName: e.SrcName,
-			SrcID: e.SrcID,
+			SrcName:  e.SrcName,
+			SrcID:    e.SrcID,
 		}
 	}
-	
+
 	p := &playlist.Playlist{
-		Title: reqData.Playlist.Title,
-		Owner: &playlist.User{Uid: 1},
-		Tags: reqData.Playlist.Tags,
-		Entries: entries,
+		Title:     reqData.Playlist.Title,
+		Owner:     user,
+		Tags:      reqData.Playlist.Tags,
+		Entries:   entries,
 		ParentPid: reqData.Playlist.ParentPid,
 	}
-	
+
 	err = database.BeginTx()
 	if err != nil {
 		log.Printf("remixApiHandler: database error: %s", err.Error())
 		http.Error(w, "Database error", http.StatusInternalServerError)
 		return
 	}
-	
+
 	err = database.CreatePlaylist(p)
 	if err != nil {
 		log.Printf("remixApiHandler: database error: %s", err.Error())
 		http.Error(w, "Database error", http.StatusInternalServerError)
 		return
 	}
-	
+
 	err = database.CommitTx()
 	if err != nil {
 		log.Printf("remixApiHandler: database error: %s", err.Error())
 		http.Error(w, "Database error", http.StatusInternalServerError)
 		return
 	}
-	
+
 	respData := remixApiResponseData{
 		Pid: p.Pid,
 	}
-	
+
 	w.Header().Set("Content-Type", "application/json")
 	err = json.NewEncoder(w).Encode(respData)
 	if err != nil {
@@ -110,19 +115,19 @@ type remixApiRequestData struct {
 }
 
 type remixApiPlaylist struct {
-	Title string `json:"title"`
-	Tags []string `json:"tags"`
-	Entries []*remixApiEntry `json:"entries"`
+	Title     string              `json:"title"`
+	Tags      []string            `json:"tags"`
+	Entries   []*remixApiEntry    `json:"entries"`
 	ParentPid playlist.PlaylistID `json:"parentPid"`
 }
 
 type remixApiEntry struct {
-	Title string `json:"title"`
-	Artist string `json:"artist"`
-	Album string `json:"album"`
-	Duration int `json:"duration"`
-	SrcName string `json:"srcName"`
-	SrcID string `json:"srcID"`
+	Title    string `json:"title"`
+	Artist   string `json:"artist"`
+	Album    string `json:"album"`
+	Duration int    `json:"duration"`
+	SrcName  string `json:"srcName"`
+	SrcID    string `json:"srcID"`
 	ImageURL string `json:"imageURL"`
 }
 
