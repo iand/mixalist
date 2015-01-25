@@ -21,3 +21,19 @@ body {
 .modal-dialog {
 	left: auto;
 }
+
+#search .modal-body {
+  max-height: 500px;
+  overflow-y: scroll;
+}
+
+#search .search-preview {
+  max-width: 128px;
+  max-height: 96px;
+}
+
+#search .searchrow {
+  padding-top: 5px;
+}
+
+

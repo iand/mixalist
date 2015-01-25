@@ -40,6 +40,12 @@ func viewplaylist(w http.ResponseWriter, r *http.Request) {
 		"playlist": pl,
 	}
 
+	if pl.ParentPid != 0 {
+		if parent, err := database.GetPlaylist(pl.ParentPid); err == nil {
+			data["parentpl"] = parent
+		}
+	}
+
 	w.Header().Add("Content-Type", "text/html")
 	t.Execute(w, data)
 }
