@@ -90,15 +90,60 @@
                 <div class="col-md-9">
                   <h3> {{.Title}} </h3>
                   <h4> {{.Artist}} </h4>
+                   <button class="btn btn-primary " type="button" data-toggle="modal" data-target="#player" data-sourceid="{{.SrcID}}" data-source="{{.SrcName}}">Play</button>
                 </div>
               </div>
             </div>
           </div>
           {{end}}
         </div>
+
+
+        <div class="modal" id="player" tabindex="-1" role="dialog" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-body">
+                <div class="bs-example" data-example-id="responsive-embed-16by9-iframe-youtube">
+                  <div class="embed-responsive embed-responsive-16by9">
+                    <iframe class="embed-responsive-item" id="embedded" src="" allowfullscreen></iframe>
+                  </div>
+                </div>
+              </div>
+
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              </div>
+            </div><!-- /.modal-content -->
+          </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+
+
+
+
+
+
         <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
         <!-- Include all compiled plugins (below), or include individual files as needed -->
         <script src="/js/bootstrap.min.js"></script>
+
+        <script type="text/javascript">
+
+          $('#player').on('show.bs.modal', function (e) {
+            var source = $(e.relatedTarget).data('source');
+            var sourceid = $(e.relatedTarget).data('sourceid');
+            if (source=="youtube") {
+              $("#embedded").attr('src', "//www.youtube.com/embed/" + sourceid + "?rel=0&autoplay=1");
+            } else if (source=="soundcloud") {
+              $("#embedded").attr('src', " //w.soundcloud.com/player/?url=https%3A//soundcloud.com/tracks/" + sourceid);
+            }
+          });
+        </script>
+
+
+
+
+
+
       </body>
     </html>
