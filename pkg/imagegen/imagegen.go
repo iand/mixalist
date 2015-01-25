@@ -14,7 +14,11 @@ func GetImageFromBlobstore(id blobstore.ID) (img image.Image, err error) {
 
 	img, _, err = image.Decode(r)
 	r.Close()
-	return img, err
+	if err != nil {
+		return nil, err
+	}
+	
+	return img, nil
 }
 
 func SaveImageToBlobstore(img image.Image) (id blobstore.ID, err error) {
@@ -31,4 +35,24 @@ func SaveImageToBlobstore(img image.Image) (id blobstore.ID, err error) {
 	}
 
 	return id, nil
+}
+
+func GeneratePlaylistImage(entryBlobIDs []blobstore.ID) (playlistBlobID blobstore.ID, err error) {
+	imgs := make([]image.Image, len(entryBlobIDs))
+	for i, entryBlobID := range entryBlobIDs {
+		imgs[i], err = GetImageFromBlobstore(entryBlobID)
+		if err != nil {
+			return "", err
+		}
+	}
+	
+	c := &Compositer{
+		DestWidth: 100,
+		TilesPerSide: 3,
+		LugDepthRatio: 0.25,
+		LugWidthRatio: 0.33,
+	}
+	
+	img := c.Composite(imgs)
+	return SaveImageToBlobstore(img)
 }

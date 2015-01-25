@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"github.com/GeertJohan/go.rice"
 	"github.com/iand/mixalist/pkg/blobstore"
+	"github.com/iand/mixalist/pkg/db"
+	"github.com/iand/mixalist/pkg/imagegen"
 	"github.com/iand/mixalist/pkg/playlist"
 	"html/template"
 	"log"
@@ -58,6 +60,7 @@ func remixApiHandler(w http.ResponseWriter, r *http.Request) {
 	user := getUser(w, r)
 
 	entries := make([]*playlist.Entry, len(reqData.Playlist.Entries))
+	entryBlobIDs := make([]blobstore.ID, 0, len(reqData.Playlist.Entries))
 
 	for i, e := range reqData.Playlist.Entries {
 		imageBlobID := blobstore.ID(e.ImageBlobID)
@@ -78,6 +81,10 @@ func remixApiHandler(w http.ResponseWriter, r *http.Request) {
 			SrcName:  e.SrcName,
 			SrcID:    e.SrcID,
 			ImageBlobID: imageBlobID,
+		}
+		
+		if imageBlobID != "" {
+			entryBlobIDs = append(entryBlobIDs, imageBlobID)
 		}
 	}
 
@@ -109,6 +116,9 @@ func remixApiHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Database error", http.StatusInternalServerError)
 		return
 	}
+	
+	// Run image generation in background
+	go generatePlaylistImageAsync(p.Pid, entryBlobIDs)
 
 	respData := remixApiResponseData{
 		Pid: p.Pid,
@@ -146,4 +156,39 @@ type remixApiEntry struct {
 
 type remixApiResponseData struct {
 	Pid playlist.PlaylistID `json:"pid"`
+}
+
+func generatePlaylistImageAsync(pid playlist.PlaylistID, entryBlobIDs []blobstore.ID) {
+	playlistBlobID, err := imagegen.GeneratePlaylistImage(entryBlobIDs)
+	if err != nil {
+		log.Printf("generatePlaylistImageAsync: failed to generate playlist image: %s", err.Error())
+		return
+	}
+	
+	// Use a separate database connection, since db.Database is not thread-safe
+	d, err := db.Connect(false)
+	if err != nil {
+		log.Printf("generatePlaylistImageAsync: database error: %s", err.Error())
+		return
+	}
+	
+	err = d.BeginTx()
+	if err != nil {
+		log.Printf("generatePlaylistImageAsync: database error: %s", err.Error())
+		return
+	}
+	
+	err = d.SetPlaylistImage(pid, playlistBlobID)
+	if err != nil {
+		log.Printf("generatePlaylistImageAsync: database error: %s", err.Error())
+		return
+	}
+	
+	err = d.CommitTx()
+	if err != nil {
+		log.Printf("generatePlaylistImageAsync: database error: %s", err.Error())
+		return
+	}
+	
+	// TODO: close d
 }

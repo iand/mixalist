@@ -219,3 +219,17 @@ func (db *Database) SearchPlaylists(pageSize, pageNum int, keywords ...string) (
 
 	return pids, nil
 }
+
+func (db *Database) SetPlaylistImage(pid playlist.PlaylistID, imageBlobID blobstore.ID) (err error) {
+	if db.tx.tx == nil {
+		return wrapError(1, NotInTransactionError)
+	}
+	
+	_, err = db.tx.Exec("update mix_playlist set image_blob_id = $1 where pid = $2", string(imageBlobID), pid)
+	if err != nil {
+		db.RollbackTx()
+		return err
+	}
+	
+	return nil
+}
