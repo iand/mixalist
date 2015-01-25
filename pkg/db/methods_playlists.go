@@ -126,12 +126,15 @@ func (db *Database) CreatePlaylistRecord(title string, ownerUid playlist.UserID,
 		return 0, wrapError(1, NotInTransactionError)
 	}
 
-	var parentPidNullable interface{} = parentPid
-	if parentPid == 0 {
-		parentPidNullable = nil
+	query := "insert into mix_playlist (title, owner_uid, created, search_text) values ($1, $2, timestamp 'now', $3) returning id"
+	params := []interface{}{title, ownerUid, searchText}
+	if parentPid != 0 {
+		query = "insert into mix_playlist (title, owner_uid, created, search_text, parent_pid) values ($1, $2, timestamp 'now', $3, $4) returning id"
+		params = append(params, parentPid)
 	}
 
-	row := db.tx.QueryRow("insert into mix_playlist (title, owner_uid, created, search_text, parent_pid) values ($1, $2, timestamp 'now', $3, $4) returning id", title, ownerUid, searchText, parentPidNullable)
+	row := db.tx.QueryRow(query, params...)
+	
 	err = row.Scan(&newPid)
 	if err != nil {
 		db.RollbackTx()
