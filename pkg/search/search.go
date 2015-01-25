@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -163,7 +164,9 @@ type SoundcloudTrack struct {
 func searchSoundcloud(query string, results chan Result, quit chan bool, done chan bool) {
 	var tracks []SoundcloudTrack
 
-	url := fmt.Sprintf("https://api.soundcloud.com/tracks.json?consumer_key=0fde8f66aecb751990e0a8c0af52736f&filter=all&order=default&q=%s", url.QueryEscape(query))
+	soundcloudID := os.Getenv("MIXALIST_SOUNDCLOUD_ID")
+
+	url := fmt.Sprintf("https://api.soundcloud.com/tracks.json?consumer_key=%s&filter=all&order=default&q=%s", url.QueryEscape(soundcloudID), url.QueryEscape(query))
 	resp, err := http.Get(url)
 	if err != nil {
 		log.Printf("failed to fetch from soundcloud: %v", err)
