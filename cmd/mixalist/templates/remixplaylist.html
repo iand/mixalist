@@ -35,6 +35,10 @@
         #search .searchrow {
           padding-top: 5px;
         }
+        
+        .modal-dialog {
+          left: auto;
+        }
 
       </style>
 
@@ -115,7 +119,8 @@
             <div id="entries">
               {{range .playlist.Entries}}
               <div class="row playlist-entry">
-                <input class="ytid" type="hidden" value="{{.Ytid}}"/>
+                <input class="srcname" type="hidden" value="{{.SrcName}}"/>
+                <input class="srcid" type="hidden" value="{{.SrcID}}"/>
                 <div class="col-md-1">
                   <p class=" pull-right">
                     <button type="button" class="btn btn-info btn-xs"><span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span></button>
@@ -130,7 +135,7 @@
                   <div class="media">
                     <div class="media-left media-middle">
                       <a href="#">
-                        <img class="media-object" src="images/sample2.jpg" alt="..." height="96" width="96" >
+                        <img class="media-object" class="thumb" src="images/sample2.jpg" alt="..." height="96" width="96" >
                       </a>
                     </div>
 
@@ -148,7 +153,8 @@
 
             <div class="row">
               <div class="input-group">
-                <input type="text" class="form-control" placeholder="Name of Playlist" aria-describedby="basic-addon2"><button type="button" class="btn btn-default">Save</button>
+                <input type="text" class="form-control" placeholder="Name of Playlist" aria-describedby="basic-addon2" value="{{.playlist.Title}}" id="playlist-title"/>
+                <button type="button" class="btn btn-default" id="save">Save</button>
               </div>
             </div>
           </div>
@@ -213,7 +219,8 @@
               $("#search").modal("hide");
               $("#entries").append(
                 '<div class="row playlist-entry">' +
-                  '<input class="ytid" type="hidden" value="' + val['sourceid'] + '"/>' +
+                  '<input class="srcname" type="hidden" value="' + val['source'] + '"/>' +
+                  '<input class="srcid" type="hidden" value="' + val['sourceid'] + '"/>' +
                   '<div class="col-md-1">' +
                     '<p class=" pull-right">' +
                       '<button type="button" class="btn btn-info btn-xs"><span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span></button>' +
@@ -227,12 +234,12 @@
                     '<div class="media">' +
                       '<div class="media-left media-middle">' +
                         '<a href="#">' +
-                          '<img class="media-object" src="' + val['previewurl'] + '" alt="..." height="96" width="96" >' +
+                          '<img class="media-object thumb" src="' + val['previewurl'] + '" alt="..." height="96" width="96" >' +
                         '</a>' +
                       '</div>' +
                       '<div class="media-body">' +
-                        '<h3> <input type="text" size="30" placeholder="Title" value="' + val['title'] + '"/> </h3>' +
-                        '<h4> <input type="text" size="30" placeholder="Artist"/> </h4>' +
+                        '<h3> <input class="title" type="text" size="30" placeholder="Title" value="' + val['title'] + '"/> </h3>' +
+                        '<h4> <input class="artist" type="text" size="30" placeholder="Artist"/> </h4>' +
                       '</div>' +
                     '</div>' +
                   '</div>' +
@@ -254,6 +261,56 @@
         $('#search').on('show.bs.modal', function (event) {
           $("#searchbox").val("");
           $("#searchresults").html("");
+        });
+        
+        $("#save").click(function(event) {
+          event.preventDefault();
+          
+          var entries = [];
+          
+          $(".playlist-entry").each(function() {
+            entries.push({
+              title: $(this).find(".title").val(),
+              artist: $(this).find(".artist").val(),
+              album: "",
+              duration: 0,
+              srcName: $(this).find(".srcname").val(),
+              srcID: $(this).find(".srcid").val(),
+              imageUrl: $(this).find(".thumb").attr("src"),
+            });
+          });
+          
+          var playlist = {
+            title: $("#playlist-title").val(),
+            tags: [],
+            entries: entries,
+            parentPid: {{.playlist.Pid}},
+          };
+          
+          var reqData = {
+            playlist: playlist,
+          };
+          
+          $.ajax({
+            url: "/api/remix",
+            type: "post",
+            data: JSON.stringify(reqData),
+            processData: false,
+            contentType: "application/json",
+            error: function(jqXHR, status, error) {
+              alert("Ajax error: " + status + ": " + error);
+            },
+            success: function(data) {
+              alert("OK");
+            },
+          });
+        });
+        
+        // make pressing enter in the search box perform a search
+        $("#searchbox").keydown(function(event) {
+          if (event.keyCode == 13) {
+            $("#searchbtn").click();
+          }
         });
 
     });

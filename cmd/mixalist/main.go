@@ -44,6 +44,7 @@ func main() {
 	router.PathPrefix("/js/").Handler(http.StripPrefix("/js/", http.FileServer(rice.MustFindBox("js").HTTPBox())))
 	router.PathPrefix("/images/").Handler(http.StripPrefix("/images/", http.FileServer(rice.MustFindBox("images").HTTPBox())))
 
+	router.Path("/api/remix").HandlerFunc(remixApiHandler)
 	router.Path("/s").HandlerFunc(searchHandler)
 	router.Path("/p/{pid:[0-9]+}").HandlerFunc(viewplaylist)
 	router.Path("/r").HandlerFunc(remixplaylist)
