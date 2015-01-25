@@ -2,7 +2,6 @@ package blobstore
 
 import (
 	"fmt"
-    "github.com/rakyll/magicmime"
 	"io"
 	"log"
 	"math/rand"
@@ -103,7 +102,19 @@ func (store Store) Download(url string) (id ID, err error) {
 }
 
 func (store Store) GetType(id ID) (mimeType string, err error) {
-    return magic.TypeByFile(store.getFilename(id))
+	f, err := store.Open(id)
+	if err != nil {
+		return "", err
+	}
+	
+	buf := make([]byte, 512)
+	_, err = f.Read(buf)
+	f.Close()
+	if err != nil {
+		return "", err
+	}
+	
+	return http.DetectContentType(buf), nil
 }
 
 func fileExists(filename string) (exists bool) {
@@ -112,7 +123,6 @@ func fileExists(filename string) (exists bool) {
 }
 
 var DefaultStore Store
-var magic *magicmime.Magic
 
 func init() {
 	DefaultStore = Store(os.Getenv("MIXALIST_BS_DIR"))
@@ -121,23 +131,4 @@ func init() {
 		fmt.Fprintf(os.Stderr, "Please set it to the blobstore directory.\n")
 		os.Exit(2)
 	}
-	
-    flags := magicmime.MAGIC_MIME_TYPE |
-             magicmime.MAGIC_ERROR |
-             magicmime.MAGIC_NO_CHECK_APPTYPE |
-             magicmime.MAGIC_NO_CHECK_CDF |
-             magicmime.MAGIC_NO_CHECK_COMPRESS |
-             magicmime.MAGIC_NO_CHECK_ELF |
-             magicmime.MAGIC_NO_CHECK_ENCODING |
-             magicmime.MAGIC_NO_CHECK_TAR |
-             magicmime.MAGIC_NO_CHECK_TEXT |
-             magicmime.MAGIC_NO_CHECK_TOKENS
-    
-    m, err := magicmime.New(flags)
-    if err != nil {
-        fmt.Fprintf(os.Stderr, "Could not open magic database: %s", err.Error())
-        return
-    }
-    
-    magic = m
 }
