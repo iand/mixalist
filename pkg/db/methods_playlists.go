@@ -83,7 +83,7 @@ func (db *Database) GetPlaylistRecord(pid playlist.PlaylistID) (title string, ow
 		return "", 0, 0, "", err
 	}
 
-	return title, ownerUid, parentPid, blobstore.ID(blobID), nil
+	return title, ownerUid, parentPid, blobstore.ID(strings.Trim(blobID, " ")), nil
 }
 
 // Get all information about a playlist.

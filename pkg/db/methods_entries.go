@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/iand/mixalist/pkg/blobstore"
 	"github.com/iand/mixalist/pkg/playlist"
+	"strings"
 	"time"
 )
 
@@ -33,7 +34,7 @@ func (db *Database) GetPlaylistEntries(pid playlist.PlaylistID) (entries []*play
 			SrcName:  srcName,
 			SrcID:    srcID,
 			Duration: time.Duration(duration) * time.Second,
-			ImageBlobID: blobstore.ID(imageBlobID),
+			ImageBlobID: blobstore.ID(strings.Trim(imageBlobID, " ")),
 		}
 
 		entries = append(entries, entry)
@@ -95,7 +96,7 @@ func (db *Database) SearchEntries(pageSize, pageNum int, keywords ...string) (en
 			return nil, err
 		}
 		entry.Duration = time.Duration(duration) * time.Second
-		entry.ImageBlobID = blobstore.ID(imageBlobID)
+		entry.ImageBlobID = blobstore.ID(strings.Trim(imageBlobID, " "))
 		entries = append(entries, entry)
 	}
 
