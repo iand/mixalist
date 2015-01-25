@@ -43,6 +43,10 @@ func (d debugWrappedDB) Begin() (debugWrappedTx, error) {
 	return debugWrappedTx{tx}, wrapError(1, err)
 }
 
+func (d debugWrappedDB) Close() error {
+	return wrapError(1, d.db.Close())
+}
+
 func (d debugWrappedDB) Exec(query string, args ...interface{}) (sql.Result, error) {
 	result, err := d.db.Exec(query, args...)
 	return result, wrapError(1, err)

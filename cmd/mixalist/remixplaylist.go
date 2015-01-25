@@ -192,7 +192,11 @@ func generatePlaylistImageAsync(pid playlist.PlaylistID, entryBlobIDs []blobstor
 		return
 	}
 	
-	// TODO: close d
+	err = d.Close()
+	if err != nil {
+		log.Printf("generatePlaylistImageAsync: database error: %s", err.Error())
+		return
+	}
 	
 	log.Printf("generatePlaylistImageAsync: finished generation for playlist %d", pid)
 }
