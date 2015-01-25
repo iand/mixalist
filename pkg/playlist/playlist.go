@@ -20,11 +20,12 @@ type Playlist struct {
 
 type Entry struct {
 	Eid      EntryID
-	Ytid     string
 	Title    string
 	Artist   string
 	Album    string
 	Duration time.Duration
+	SrcName  string	// "youtube" or "soundcloud"
+	SrcID    string
 }
 
 type User struct {
