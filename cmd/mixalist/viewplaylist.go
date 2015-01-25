@@ -32,8 +32,11 @@ func viewplaylist(w http.ResponseWriter, r *http.Request) {
 	templateData, _ := box.String("playlist.html")
 	t, _ := template.New("playlist.html").Parse(templateData)
 
-	data := map[string]interface{}{
+	user := getUser(w, r)
 
+	data := map[string]interface{}{
+		"uid":      user.Uid,
+		"username": user.Name,
 		"playlist": pl,
 	}
 
