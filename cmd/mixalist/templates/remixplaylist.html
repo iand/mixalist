@@ -108,39 +108,7 @@
             </div>
 
             <div id="entries">
-              {{range .playlist.Entries}}
-              <div class="row playlist-entry">
-                <input class="srcname" type="hidden" value="{{.SrcName}}"/>
-                <input class="srcid" type="hidden" value="{{.SrcID}}"/>
-                <input class="imageblobid" type="hidden" value="{{.ImageBlobID}}"/>
-                <div class="col-md-1">
-                  <p class=" pull-right">
-                    <button type="button" class="btn btn-info btn-xs" onclick="moveUp(this);"><span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span></button>
-                    <button type="button" class="btn btn-info btn-xs" onclick="moveDown(this);"><span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span></button>
-                  </p>
-                  <p class=" pull-right">
-                    <button type="button" class="btn btn-danger btn-xs" onclick="removeRow(this);"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>
-                  </p>
-                </div>
-
-                <div class="col-md-11">
-                  <div class="media">
-                    <div class="media-left media-middle">
-                      <a href="#">
-                        <img class="media-object" class="thumb" src="/blob/{{.ImageBlobID}}" alt="..." height="96" width="96" >
-                      </a>
-                    </div>
-
-                    <div class="media-body">
-                      <h3> <input class="title" type="text" size="30" placeholder="Title" value="{{.Title}}"/> </h3>
-                      <h4> <input class="artist" type="text" size="30" placeholder="Artist" value="{{.Artist}}"/> </h4>
-                    </div>
-                  </div>
-
-                </div>
-
-              </div>
-              {{end}}
+              <!-- now populated in javascript below -->
             </div>
 
             <div class="row">
@@ -189,6 +157,42 @@
 
     <script type="text/javascript">
 
+      function addEntry(title, artist, srcName, srcID, imageUrl, imageBlobID) {
+        $("#entries").append(
+          '<div class="row playlist-entry">' +
+            '<input class="srcname" type="hidden" value="' + srcName + '"/>' +
+            '<input class="srcid" type="hidden" value="' + srcID + '"/>' +
+            '<input class="imageblobid" type="hidden" value="' + imageBlobID + '"/>' +
+            '<div class="col-md-1">' +
+              '<p class=" pull-right">' +
+                '<button type="button" class="btn btn-info btn-xs" onclick="moveUp(this);"><span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span></button> ' +
+                '<button type="button" class="btn btn-info btn-xs" onclick="moveDown(this);"><span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span></button>' +
+              '</p>' +
+              '<p class=" pull-right">' +
+                '<button type="button" class="btn btn-danger btn-xs" onclick="removeRow(this);"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>' +
+              '</p>' +
+            '</div>' +
+            '<div class="col-md-11">' +
+              '<div class="media">' +
+                '<div class="media-left media-middle">' +
+                  '<a href="#">' +
+                    '<img class="media-object thumb" src="' + imageUrl + '" alt="..." height="96" width="96" >' +
+                  '</a>' +
+                '</div>' +
+                '<div class="media-body">' +
+                  '<h3> <input class="title" type="text" size="30" placeholder="Title" value="' + title + '"/> </h3>' +
+                  '<h4> <input class="artist" type="text" size="30" placeholder="Artist" value="' + artist + '"/> </h4>' +
+                '</div>' +
+              '</div>' +
+            '</div>' +
+          '</div>'
+        );
+      }
+      
+      {{range .playlist.Entries}}
+        addEntry("{{.Title}}", "{{.Artist}}", "{{.SrcName}}", "{{.SrcID}}", "/blob/{{.ImageBlobID}}", "{{.ImageBlobID}}");
+      {{end}}
+
       function moveUp(el) {
         var row = $(el).parents(".playlist-entry");
         var prev = row.prev();
@@ -225,34 +229,7 @@
             button.click(function(event) {
               event.preventDefault();
               $("#search").modal("hide");
-              $("#entries").append(
-                '<div class="row playlist-entry">' +
-                  '<input class="srcname" type="hidden" value="' + val['source'] + '"/>' +
-                  '<input class="srcid" type="hidden" value="' + val['sourceid'] + '"/>' +
-                  '<input class="imageblobid" type="hidden" value=""/>' +
-                  '<div class="col-md-1">' +
-                    '<p class=" pull-right">' +
-                      '<button type="button" class="btn btn-info btn-xs" onclick="moveUp(this);"><span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span></button> ' +
-                      '<button type="button" class="btn btn-info btn-xs" onclick="moveDown(this);"><span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span></button>' +
-                    '</p>' +
-                    '<p class=" pull-right">' +
-                      '<button type="button" class="btn btn-danger btn-xs" onclick="removeRow(this);"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>' +
-                    '</p>' +
-                  '</div>' +
-                  '<div class="col-md-11">' +
-                    '<div class="media">' +
-                      '<div class="media-left media-middle">' +
-                        '<a href="#">' +
-                          '<img class="media-object thumb" src="' + val['previewurl'] + '" alt="..." height="96" width="96" >' +
-                        '</a>' +
-                      '</div>' +
-                      '<div class="media-body">' +
-                        '<h3> <input class="title" type="text" size="30" placeholder="Title" value="' + val['title'] + '"/> </h3>' +
-                        '<h4> <input class="artist" type="text" size="30" placeholder="Artist"/> </h4>' +
-                      '</div>' +
-                    '</div>' +
-                  '</div>' +
-                '</div>');
+              addEntry(val['title'], "", val['source'], val['sourceid'], val['previewurl'], "");
             });
           });
         });
