@@ -296,7 +296,7 @@
               alert("Ajax error: " + status + ": " + error);
             },
             success: function(data) {
-              alert("OK");
+              document.location.href = "/p/" + data.pid;
             },
           });
         });
