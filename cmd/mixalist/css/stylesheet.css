@@ -1,27 +1,23 @@
-body{
-
+body {
 	background: url('/images/b3.png');
-
-
 }
 
-.image-panel{
+.image-panel {
 	background:#2e2e32;
 }
-.playlist-image{
-
+.playlist-image {
 	border:6px solid #2e2e32;
 }
 
 
 .navbar-nav li a {
-
 	line-height: 34px;
-
 }
 
 .navbar-collapse {
-
 	line-height: 34px;
+}
 
+.modal-dialog {
+	left: auto;
 }
