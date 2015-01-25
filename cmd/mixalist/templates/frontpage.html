@@ -66,7 +66,7 @@
             {{range .playlists}}
             <div class="col-sm-6 col-md-3">
               <div class="thumbnail">
-                   <a href="/p/{{.Pid}}"><img src="{{.ImageBlobID}}" alt="..." height="196" width="196" class="playlist-image"></a>
+                   <a href="/p/{{.Pid}}"><img src="/blob/{{.ImageBlobID}}" alt="..." height="196" width="196" class="playlist-image"></a>
 
                <div class="caption">
                 <h4><a href ="/p/{{.Pid}}">{{.Title}}</a></h4>
