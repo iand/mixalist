@@ -29,7 +29,7 @@ func (store Store) mkID() (id ID) {
 }
 
 func (store Store) getFilename(id ID) (filename string) {
-	return filepath.Join(string(store), string(id[:2]), string(id[2:4]), string(id[4:6]), string(id) + ".dat")
+	return filepath.Join(string(store), string(id[:2]), string(id[2:4]), string(id[4:6]), string(id)+".dat")
 }
 
 func (store Store) mkUnusedID() (id ID) {
@@ -37,7 +37,7 @@ func (store Store) mkUnusedID() (id ID) {
 	for fileExists(store.getFilename(id)) {
 		id = store.mkID()
 	}
-	
+
 	return id
 }
 
@@ -49,7 +49,7 @@ func (store Store) Create() (id ID, w io.WriteCloser, err error) {
 	if err != nil {
 		return "", nil, err
 	}
-	
+
 	f, err := os.Create(blobFile)
 	return id, f, err
 }
