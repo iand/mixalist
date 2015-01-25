@@ -13,7 +13,7 @@ import (
 
 const IDLength = 16
 
-const idChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+const idChars = "abcdefghijklmnopqrstuvwxyz0123456789"
 
 type ID string
 
