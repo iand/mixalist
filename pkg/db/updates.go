@@ -9,7 +9,7 @@ package db
 // 5) commit all of the above as a single commit
 
 // Latest version of the database
-const Latest DatabaseVersion = 10
+const Latest DatabaseVersion = 11
 
 // Database update history.
 // Field 'From' and 'To' are the version numbers before and after the update.
@@ -99,6 +99,14 @@ var Updates = []*DatabaseUpdate{
 			"alter table mix_playlist_entry drop column yt_id",
 		},
 	},
+	&DatabaseUpdate{
+		From: 10,
+		To: 11,
+		SQL: []string{
+			"alter table mix_playlist alter column image_blob_id type char(16)",
+			"alter table mix_playlist_entry alter column image_blob_id type char(16)",
+		},
+	},
 }
 
 // LatestSchema is a list of table creation statements, accurate to the version
@@ -116,7 +124,7 @@ var LatestSchema = []Table{
 		created     timestamp,
 		search_text varchar,
 		parent_pid  integer references mix_playlist (pid),
-		image_blob_id char(32)
+		image_blob_id char(16)
 	)`},
 
 	Table{"mix_playlist_star", `create table mix_playlist_star (
@@ -140,7 +148,7 @@ var LatestSchema = []Table{
 		album       varchar(255),
 		duration    smallint,
 		search_text varchar,
-		image_blob_id char(32),
+		image_blob_id char(16),
 		src_name	varchar,
 		src_id		varchar
 	)`},

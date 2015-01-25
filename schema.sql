@@ -1,4 +1,4 @@
-# Schema version 10
+# Schema version 11
 
 create table mix_version (
     version     integer,                                # current database version
@@ -18,7 +18,7 @@ create table mix_playlist (
     created     timestamp,                              # timestamp of creation of the playlist
     search_text varchar,                                # concenation of title and tags
     parent_pid  integer references mix_playlist (pid),  # ID of playlist that this playlist is a remix of
-    image_blob_id char(32),                             # blob ID of composite playlist art
+    image_blob_id char(16),                             # blob ID of composite playlist art
 );
 
 create table mix_playlist_star (
@@ -42,7 +42,7 @@ create table mix_playlist_entry (
     album       varchar(255),                           # track album (can be edited)
     duration    smallint,                               # duration of video in seconds
     search_text varchar,                                # concatenation of title, artist and album (for searching)
-    image_blob_id char(32),                             # blob ID of album art
+    image_blob_id char(16),                             # blob ID of album art
     src_name    varchar,                                # name of source ("youtube", "soundcloud")
     src_id      varchar                                 # identifier of video from source (e.g. youtube video ID)
 );
@@ -60,4 +60,5 @@ Schema version changelog:
     8: add mix_playlist.parent_pid column
     9: add mix_playlist.image_blob_id and mix_playlist_entry.image_blob_id columns
     10: replace mix_playlist.yt_id with src_name and src_id columns
+    11: resize image_blob_id fields (in mix_playlist and mix_playlist_entry) to 16 characters
 */
