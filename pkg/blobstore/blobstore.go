@@ -3,6 +3,7 @@ package blobstore
 import (
 	"fmt"
 	"io"
+	"log"
 	"math/rand"
 	"net/http"
 	"os"
@@ -69,6 +70,8 @@ func (store Store) Delete(id ID) (err error) {
 }
 
 func (store Store) Download(url string) (id ID, err error) {
+	log.Printf("blobstore: fetching '%s'", url)
+	
 	resp, err := http.Get(url)
 	if err != nil {
 		return "", err

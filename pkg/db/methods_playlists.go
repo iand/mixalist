@@ -72,8 +72,10 @@ func (db *Database) GetSortedPlaylistIDs(pageSize, pageNum int, requiredTags []s
 
 // Get only the information stored in the actual mix_playlist record.
 func (db *Database) GetPlaylistRecord(pid playlist.PlaylistID) (title string, ownerUid playlist.UserID, parentPid playlist.PlaylistID, imageBlobID blobstore.ID, err error) {
+	var blobID string
+	
 	row := db.getQueryable().QueryRow("select title, owner_uid, coalesce(parent_pid, 0), coalesce(image_blob_id, '') from mix_playlist where pid = $1", pid)
-	err = row.Scan(&title, &ownerUid, &parentPid, &imageBlobID)
+	err = row.Scan(&title, &ownerUid, &parentPid, &blobID)
 	if err != nil {
 		if isNoRowsError(err) {
 			err = InvalidPlaylistError
@@ -81,7 +83,7 @@ func (db *Database) GetPlaylistRecord(pid playlist.PlaylistID) (title string, ow
 		return "", 0, 0, "", err
 	}
 
-	return title, ownerUid, parentPid, imageBlobID, nil
+	return title, ownerUid, parentPid, blobstore.ID(blobID), nil
 }
 
 // Get all information about a playlist.
@@ -129,7 +131,7 @@ func (db *Database) CreatePlaylistRecord(title string, ownerUid playlist.UserID,
 	}
 
 	query := "insert into mix_playlist (title, owner_uid, created, search_text, image_blob_id) values ($1, $2, timestamp 'now', $3, $4) returning pid"
-	params := []interface{}{title, ownerUid, searchText, imageBlobID}
+	params := []interface{}{title, ownerUid, searchText, string(imageBlobID)}
 	if parentPid != 0 {
 		query = "insert into mix_playlist (title, owner_uid, created, search_text, image_blob_id, parent_pid) values ($1, $2, timestamp 'now', $3, $4, $5) returning pid"
 		params = append(params, parentPid)

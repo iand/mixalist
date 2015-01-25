@@ -112,6 +112,7 @@
               <div class="row playlist-entry">
                 <input class="srcname" type="hidden" value="{{.SrcName}}"/>
                 <input class="srcid" type="hidden" value="{{.SrcID}}"/>
+                <input class="imageblobid" type="hidden" value="{{.ImageBlobID}}"/>
                 <div class="col-md-1">
                   <p class=" pull-right">
                     <button type="button" class="btn btn-info btn-xs"><span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span></button>
@@ -126,7 +127,7 @@
                   <div class="media">
                     <div class="media-left media-middle">
                       <a href="#">
-                        <img class="media-object" class="thumb" src="images/sample2.jpg" alt="..." height="96" width="96" >
+                        <img class="media-object" class="thumb" src="/blob/{{.ImageBlobID}}" alt="..." height="96" width="96" >
                       </a>
                     </div>
 
@@ -212,6 +213,7 @@
                 '<div class="row playlist-entry">' +
                   '<input class="srcname" type="hidden" value="' + val['source'] + '"/>' +
                   '<input class="srcid" type="hidden" value="' + val['sourceid'] + '"/>' +
+                  '<input class="imageblobid" type="hidden" value=""/>' +
                   '<div class="col-md-1">' +
                     '<p class=" pull-right">' +
                       '<button type="button" class="btn btn-info btn-xs"><span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span></button>' +
@@ -268,6 +270,7 @@
               srcName: $(this).find(".srcname").val(),
               srcID: $(this).find(".srcid").val(),
               imageUrl: $(this).find(".thumb").attr("src"),
+              imageBlobID: $(this).find(".imageblobid").val(),
             });
           });
 
