@@ -17,3 +17,7 @@ func (db *Database) GetPlaylistStars(pid playlist.PlaylistID) (stars int, err er
 
 	return stars, nil
 }
+
+func (db *Database) ToggleStar(uid playlist.UserID, pid playlist.PlaylistID) (bool, error) {
+	return false, nil
+}
