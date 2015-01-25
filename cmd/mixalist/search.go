@@ -20,7 +20,7 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp.Results = search.Search(query, 8)
+	resp.Results = search.Search(query, 30)
 	writeJSON(w, resp)
 }
 
