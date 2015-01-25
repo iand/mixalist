@@ -159,6 +159,8 @@ type remixApiResponseData struct {
 }
 
 func generatePlaylistImageAsync(pid playlist.PlaylistID, entryBlobIDs []blobstore.ID) {
+	log.Printf("generatePlaylistImageAsync: starting generation for playlist %d", pid)
+	
 	playlistBlobID, err := imagegen.GeneratePlaylistImage(entryBlobIDs)
 	if err != nil {
 		log.Printf("generatePlaylistImageAsync: failed to generate playlist image: %s", err.Error())
@@ -191,4 +193,6 @@ func generatePlaylistImageAsync(pid playlist.PlaylistID, entryBlobIDs []blobstor
 	}
 	
 	// TODO: close d
+	
+	log.Printf("generatePlaylistImageAsync: finished generation for playlist %d", pid)
 }

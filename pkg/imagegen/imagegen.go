@@ -4,6 +4,9 @@ import (
 	"github.com/iand/mixalist/pkg/blobstore"
 	"image"
 	"image/png"
+	
+	_ "image/gif"
+	_ "image/jpeg"
 )
 
 func GetImageFromBlobstore(id blobstore.ID) (img image.Image, err error) {
