@@ -61,7 +61,7 @@ var playlists = []*playlist.Playlist{
 				Title: "My Heart is Broken", SrcName: "youtube", SrcID: "f1QGnq9jUU0", Artist: "Evanescence",
 			},
 			&playlist.Entry{
-				Title: "The Other Side", SrcName: "youtube", SrcID: "HiIvtRg7-Lc", Artist: "Evanescence",
+				Title: "The Other Side", SrcName: "youtube", SrcID: "HiIvtRg7Lc", Artist: "Evanescence",
 			},
 			&playlist.Entry{
 				Title: "What you Want", SrcName: "youtube", SrcID: "wVWazHTunSI", Artist: "Evanescence",
@@ -115,7 +115,7 @@ var playlists = []*playlist.Playlist{
 			&playlist.Entry{Title: "Sweet Sacrifice", Artist: "Evanescence", SrcName: "youtube", SrcID: "XBYhQnjyrWo"},
 			&playlist.Entry{Title: "The Only One", Artist: "Evanescence", SrcName: "youtube", SrcID: "bhZnKDS3H4s"},
 			&playlist.Entry{Title: "My Heart is Broken", Artist: "Evanescence", SrcName: "youtube", SrcID: "f1QGnq9jUU0"},
-			&playlist.Entry{Title: "The Other Side", Artist: "Evanescence", SrcName: "youtube", SrcID: "HiIvtRg7-Lc"},
+			&playlist.Entry{Title: "The Other Side", Artist: "Evanescence", SrcName: "youtube", SrcID: "HiIvtRg7Lc"},
 			&playlist.Entry{Title: "What you Want", Artist: "Evanescence", SrcName: "youtube", SrcID: "wVWazHTunSI"},
 			&playlist.Entry{Title: "Lost in Paradise", Artist: " Evanescence", SrcName: "youtube", SrcID: "3rnxlW5TrBs"},
 			&playlist.Entry{Title: "Brompton Cocktail", Artist: "Avenged Sevenfold", SrcName: "youtube", SrcID: "ZPIrGXybLYU"},
@@ -146,6 +146,34 @@ var playlists = []*playlist.Playlist{
 			&playlist.Entry{Artist: "Spandau Ballet", Title: "Gold", SrcName: "youtube", SrcID: "gSq8ZBdSxNU"},
 			&playlist.Entry{Artist: "Simple Minds", Title: "Promised You a Miracle", SrcName: "youtube", SrcID: "tX55HEX0hb0"},
 			&playlist.Entry{Artist: "Duran Duran", Title: "Girls on Film", SrcName: "youtube", SrcID: "5dDCcMRpUnc"},
+		},
+	},
+
+	&playlist.Playlist{
+		Pid: 9,
+		Owner: &playlist.User{
+			Uid: 2,
+		},
+		Title: "Pop",
+		Tags:  []string{"pop"},
+		Entries: []*playlist.Entry{
+			&playlist.Entry{Title: "Blank Space", Artist: "Taylor Swift", SrcName: "youtube", SrcID: "eORhEE9VVg"},
+			&playlist.Entry{Title: "These Days", Artist: "Take That", SrcName: "youtube", SrcID: "WvEatettGtU"},
+			&playlist.Entry{Title: "Shake it off", Artist: "Taylor SWift", SrcName: "youtube", SrcID: "nfWlot6h_JM"},
+			&playlist.Entry{Title: "Bang Bang", Artist: "Jessie J, Ariana Grande, Nicki Minaj", SrcName: "youtube", SrcID: "0HDdjwpPM3Y"},
+			&playlist.Entry{Title: "All About that Bass", Artist: "Meghan Trainor", SrcName: "youtube", SrcID: "7PCkvCPvDXk"},
+			&playlist.Entry{Title: "Problem ft. Iggy Azalea", Artist: "Ariana Grande ", SrcName: "youtube", SrcID: "iS1g8G_njx8"},
+			&playlist.Entry{Title: "Rude", Artist: "M.A.G.I.C ", SrcName: "youtube", SrcID: "PIh2xe4jnpk"},
+			&playlist.Entry{Title: "Break Free", Artist: "Ariana Grande ", SrcName: "youtube", SrcID: "L8eRzOYhLuw"},
+			&playlist.Entry{Title: "Fancy ft. CharliXCX", Artist: "Iggy Azalea ", SrcName: "youtube", SrcID: "OzpOMYRi0w"},
+			&playlist.Entry{Title: "BOOM CLAP", Artist: "CharliXCX ", SrcName: "youtube", SrcID: "PIh2xe4jnpk"},
+			&playlist.Entry{Title: "Rather Be", Artist: "CLean Bandit ", SrcName: "youtube", SrcID: "mM1AtrxztU"},
+			&playlist.Entry{Title: "Thinking Out Loud", Artist: "Ed Sheeran ", SrcName: "youtube", SrcID: "YQLquThMOY"},
+			&playlist.Entry{Title: "Lego House", Artist: "Ed Sheeran ", SrcName: "youtube", SrcID: "c4BLVznuWnU"},
+			&playlist.Entry{Title: "Summer", Artist: "Calvin Harris ", SrcName: "youtube", SrcID: "ebXbLfLACGM"},
+			&playlist.Entry{Title: "Wrapped Up", Artist: "Olly Murs ", SrcName: "youtube", SrcID: "8zV2ChSA964"},
+			&playlist.Entry{Title: "Radioactive", Artist: "Imagine Dragons ", SrcName: "youtube", SrcID: "ktvTqknDobU"},
+			&playlist.Entry{Title: "Demons", Artist: "Imagine Dragons ", SrcName: "youtube", SrcID: "mWRsgZuwf_8"},
 		},
 	},
 }
