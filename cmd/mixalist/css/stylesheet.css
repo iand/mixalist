@@ -12,3 +12,16 @@ body{
 
 	border:6px solid #2e2e32;
 }
+
+
+.navbar-nav li a {
+
+	line-height: 34px;
+
+}
+
+.navbar-collapse {
+
+	line-height: 34px;
+
+}
